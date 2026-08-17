@@ -256,7 +256,7 @@
 
 <!-- ============ TELA DE EXIBIÇÃO ============ -->
 <div class="exibicao" id="exibicao" hidden>
-  <div class="palco" id="palco" data-layout="so-foto">
+  <div class="palco" id="palco" data-layout="so-foto" tabindex="-1">
     <div class="som" id="som"></div>
     <audio id="tocador" hidden></audio>
     <div class="fotos">
@@ -265,8 +265,10 @@
     </div>
     <p class="sem-foto" id="sem-foto" hidden>Nenhuma foto adicionada ainda</p>
 
+    <button class="botao-video" id="btn-video" hidden>Mostrar vídeo</button>
+
     <div class="atalhos" id="atalhos">
-      <span>Esc sair</span><span>← → foto</span><span>Espaço pausar</span><span>R religar o som</span>
+      <span>Esc sair</span><span>← → foto</span><span>Espaço pausar</span><span>R religar o som</span><span id="atalho-video" hidden>V vídeo</span>
     </div>
   </div>
 

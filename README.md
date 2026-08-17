@@ -103,14 +103,30 @@ não para exibir na TV.
 | `→` ou `Espaço` | Durante a abertura, pula direto para as fotos |
 | `←` `→` | Foto anterior / próxima |
 | `Espaço` | Pausa e retoma a troca automática |
+| `V` | Chama e esconde a telinha do vídeo |
 | `R` | Religa a trilha do começo |
+
+**A telinha do vídeo.** Com a trilha vindo do YouTube, `V` — ou o botão no
+canto inferior esquerdo, que aparece quando o mouse mexe — chama e esconde o
+player a qualquer momento. A disposição escolhida nos ajustes é só o ponto de
+partida, e a alternância não fica salva.
+
+Serve para pausar a música sem sair da exibição e, principalmente, para clicar
+em **Pular anúncio** quando ele aparece. Esse botão é do YouTube e só o mouse
+alcança, então a telinha precisa estar à vista na hora. Escondida de novo, as
+fotos voltam a ter a tela inteira.
+
+Depois de mexer no player, afaste o mouse da telinha: enquanto o cursor está
+em cima dela o teclado pertence ao YouTube, e é ao sair que `Esc` e as setas
+voltam a ser da Ciranda.
 
 ## Se algo não funcionar
 
 **A música não começa sozinha.**
-Precisa haver um clique na página antes do som. Se o navegador segurar,
-aperte `Esc` e clique em Iniciar exibição de novo, ou aperte `R` durante a
-exibição.
+Precisa haver um clique na página antes do som, e o player leva alguns
+segundos para engatar — vale esperar até uns cinco antes de concluir que
+travou. Se o navegador tiver mesmo segurado, aperte `V` para chamar a telinha
+e dê play nela. `R` também religa, mas volta a trilha para o começo.
 
 **O arquivo de música não aparece na lista.**
 A Ciranda só aceita o que o navegador sabe tocar. MP3, M4A, OGG e WAV
@@ -226,6 +242,16 @@ clique do usuário ainda vale, cerca de cinco segundos. Ler o banco de uma
 ciranda grande e ligar a trilha pode passar disso, e aí a exibição abriria
 dentro da aba — justamente na hora de transmitir. O pedido vem antes de
 qualquer espera, e não deve voltar para o fim da função.
+
+**Por que o player devolve o foco ao palco quando o mouse sai dele.** Clicar
+dentro de um iframe de outro domínio entrega o foco do teclado a ele, e a
+partir daí `Esc` e as setas vão para o YouTube — a Ciranda para de responder e
+parece travada. O ouvinte de `mouseleave` que devolve o foco não é enfeite:
+sem ele, usar o botão de pular anúncio custa o controle do teclado.
+
+**Por que o teclado do player fica desligado (`disablekb=1`).** Espaço e setas
+já pertencem à ciranda de fotos. Com o teclado do YouTube ligado, clicar no
+player faria a mesma tecla pausar o vídeo em vez de pausar a troca de fotos.
 
 **Por que a moldura é cinza neutro.** É moldura de galeria: quando a foto não
 preenche a tela, o que sobra não deve competir com a cor da foto.

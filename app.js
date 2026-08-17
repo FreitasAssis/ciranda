@@ -231,8 +231,13 @@ function interpretarLink(texto) {
 function enderecoDoPlayer(trilha) {
   if (!trilha.length) return null;
 
+  // Com controles, a telinha do canto serve para pausar e para clicar em
+  // "Pular anúncio" — coisas que a Ciranda não alcança por fora, porque o
+  // player é de outro domínio. O teclado do player fica desligado: espaço
+  // e setas pertencem à ciranda de fotos, e dois donos para a mesma tecla
+  // é confusão garantida.
   const p = new URLSearchParams({
-    autoplay: '1', loop: '1', controls: '0', modestbranding: '1',
+    autoplay: '1', loop: '1', controls: '1', modestbranding: '1',
     rel: '0', iv_load_policy: '3', playsinline: '1', disablekb: '1', fs: '0'
   });
 
@@ -676,6 +681,36 @@ let urlDaAbertura = null;
 let relogioAbertura = null;
 let naAbertura = false;
 
+let temPlayer = false;
+let relogioBotaoVideo = null;
+
+/* A disposição escolhida nos ajustes é o estado inicial, não uma
+   sentença: durante a exibição, V e o botão chamam e escondem a telinha.
+   É o que permite fazer o player aparecer, clicar em "Pular anúncio" e
+   sumir com ele, sem entregar um canto da TV ao vídeo a festa inteira.
+   A alternância não é salva — a exibição seguinte recomeça pelos ajustes. */
+function alternarVideo() {
+  if (!exibindo || !temPlayer || naAbertura) return;
+
+  const palco = $('palco');
+  palco.dataset.layout = palco.dataset.layout === 'canto' ? 'so-foto' : 'canto';
+  atualizarBotaoDoVideo();
+  despertarBotaoDoVideo();
+}
+
+// O botão diz o que faz, não o estado em que está.
+function atualizarBotaoDoVideo() {
+  $('btn-video').textContent =
+    $('palco').dataset.layout === 'canto' ? 'Esconder vídeo' : 'Mostrar vídeo';
+}
+
+function despertarBotaoDoVideo() {
+  const botao = $('btn-video');
+  botao.classList.remove('some');
+  clearTimeout(relogioBotaoVideo);
+  relogioBotaoVideo = setTimeout(() => botao.classList.add('some'), 3000);
+}
+
 async function urlDe(id) {
   if (cacheDeUrls.has(id)) {
     const url = cacheDeUrls.get(id);
@@ -750,6 +785,16 @@ async function iniciarExibicao() {
   $('palco').dataset.layout = ajustes.layout;
 
   await ligarTrilha();
+
+  // Sem player não há o que mostrar nem esconder: o botão não aparece e a
+  // barra de atalhos não promete uma tecla que não faz nada.
+  temPlayer = !!$('som').querySelector('iframe');
+  $('btn-video').hidden = !temPlayer;
+  $('atalho-video').hidden = !temPlayer;
+  if (temPlayer) {
+    atualizarBotaoDoVideo();
+    despertarBotaoDoVideo();
+  }
 
   limparCache();
   posicao = 0;
@@ -912,8 +957,15 @@ function encerrarExibicao() {
   clearInterval(relogioHora);
   clearTimeout(relogioAtalhos);
   clearTimeout(relogioAbertura);
+  clearTimeout(relogioBotaoVideo);
   naAbertura = false;
   $('abertura').hidden = true;
+
+  temPlayer = false;
+  $('btn-video').hidden = true;
+  $('btn-video').classList.remove('some');
+  $('atalho-video').hidden = true;
+  $('palco').dataset.layout = ajustes.layout;
 
   if (urlDoLogo) { URL.revokeObjectURL(urlDoLogo); urlDoLogo = null; }
   if (urlDaAbertura) { URL.revokeObjectURL(urlDaAbertura); urlDaAbertura = null; }
@@ -995,6 +1047,8 @@ document.addEventListener('keydown', (evento) => {
     agendarProxima();
     return;
   }
+
+  if (tecla === 'v' || tecla === 'V') { alternarVideo(); return; }
 
   if (tecla === 'r' || tecla === 'R') {
     if (ajustes.fonte === 'youtube') {
@@ -1168,6 +1222,20 @@ function ligarInterface() {
   });
 
   $('btn-exibir').addEventListener('click', iniciarExibicao);
+
+  $('btn-video').addEventListener('click', alternarVideo);
+
+  $('exibicao').addEventListener('mousemove', () => {
+    if (exibindo && temPlayer) despertarBotaoDoVideo();
+  });
+
+  // Clicar dentro do player entrega o foco ao iframe, e a partir daí o
+  // navegador manda as teclas para o YouTube: Esc e as setas param de
+  // responder. Quando o mouse sai da telinha, o teclado volta a ser da
+  // Ciranda.
+  $('som').addEventListener('mouseleave', () => {
+    if (exibindo) $('palco').focus();
+  });
 }
 
 async function comecar() {

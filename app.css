@@ -598,6 +598,41 @@ button, input { font-family: inherit; font-size: inherit; }
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 0 0 2px var(--ambar), 0 18px 40px rgba(0, 0, 0, .6);
+  /* Só aqui o player recebe clique. No outro layout ele cobre a tela
+     inteira por trás das fotos, e receber clique ali seria uma
+     armadilha invisível sobre tudo. */
+  pointer-events: auto;
+}
+
+/* --- botão que chama e esconde a telinha --- */
+
+.botao-video {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  z-index: 5;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 3px;
+  background: rgba(23, 23, 26, .9);
+  font-family: var(--conta);
+  font-size: 12px;
+  letter-spacing: .03em;
+  color: rgba(242, 240, 235, .8);
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 600ms ease;
+}
+
+.botao-video:hover { color: var(--ambar); }
+
+.botao-video[hidden] { display: none; }
+
+/* Apagado, também não pode receber clique: senão vira um alvo
+   invisível no canto da tela. */
+.botao-video.some {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .sem-foto {
@@ -682,7 +717,7 @@ button, input { font-family: inherit; font-size: inherit; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .foto, .atalhos { transition: none; }
+  .foto, .atalhos, .botao-video { transition: none; }
 }
 
 /* ============================================================
