@@ -1,0 +1,17 @@
+{
+  "name": "Ciranda — fotos e música na TV",
+  "short_name": "Ciranda",
+  "description": "Passa suas fotos em tela cheia com música por trás. Transmita a aba para a TV.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#17171A",
+  "theme_color": "#17171A",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icones/icone128.png", "sizes": "128x128", "type": "image/png" },
+    { "src": "icones/icone512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icones/icone512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

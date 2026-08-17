@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ciranda — fotos e música na TV</title>
+<meta name="description" content="Passa suas fotos em tela cheia com música por trás. Transmita a aba para a TV.">
+<meta name="theme-color" content="#17171A">
+<link rel="icon" href="icones/icone128.png">
+<link rel="apple-touch-icon" href="icones/icone512.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- ============ TELA DE CONFIGURAÇÃO ============ -->
+<div class="config" id="config">
+
+  <p class="alerta" id="alerta-arquivo" hidden>
+    Esta página foi aberta direto do disco. Assim o YouTube não funciona, porque
+    ele exige um endereço de verdade. Publique a pasta num servidor ou use a
+    trilha por arquivos de música.
+  </p>
+
+
+  <header class="cabeca">
+    <div class="cabeca-selo" aria-hidden="true"></div>
+    <div class="cabeca-texto">
+      <h1 class="titulo">Ciranda</h1>
+      <p class="linha-fina">Suas fotos girando em tela cheia, com música por trás. Monte aqui e transmita a aba do Chrome para a TV.</p>
+    </div>
+  </header>
+
+  <main class="pilha">
+
+    <!-- ---- TRILHA ---- -->
+    <section class="painel">
+      <div class="painel-topo">
+        <h2 class="painel-titulo">Trilha</h2>
+        <span class="marcador" id="conta-trilha">vazia</span>
+      </div>
+      <p class="painel-ajuda">A música pode vir de arquivos do seu computador ou de um vídeo do YouTube.</p>
+
+      <div class="opcoes">
+        <label class="opcao">
+          <input type="radio" name="fonte" value="youtube" checked>
+          <span class="opcao-corpo">
+            <span class="opcao-nome">YouTube</span>
+            <span class="opcao-nota">Cole o link de um vídeo ou de uma playlist.</span>
+          </span>
+        </label>
+        <label class="opcao">
+          <input type="radio" name="fonte" value="arquivos">
+          <span class="opcao-corpo">
+            <span class="opcao-nome">Arquivos de música</span>
+            <span class="opcao-nota">Toca sem internet e sem depender de site nenhum.</span>
+          </span>
+        </label>
+      </div>
+
+      <!-- ---- trilha por arquivos ---- -->
+      <div id="bloco-musicas" hidden>
+        <div class="solta espaco-acima" id="solta-musica" tabindex="0" role="button" aria-label="Escolher músicas">
+          <span class="solta-texto">Arraste as músicas aqui ou clique para escolher</span>
+        </div>
+        <input type="file" id="campo-musicas" accept="audio/*" multiple hidden>
+        <p class="progresso" id="progresso-musica" hidden></p>
+
+        <ul class="lista" id="lista-musicas"></ul>
+        <p class="vazio" id="vazio-musicas">Nenhuma música ainda. A ciranda funciona só com as fotos, em silêncio.</p>
+
+        <div class="ajuste">
+          <label class="rotulo" for="campo-volume">Volume</label>
+          <div class="deslizante">
+            <input type="range" id="campo-volume" min="0" max="100" step="5" value="80">
+            <output class="numero" id="saida-volume">80%</output>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- trilha pelo YouTube ---- -->
+      <div id="bloco-youtube">
+        <div class="entrada-dupla espaco-acima">
+          <input type="url" id="campo-link" class="campo" placeholder="https://www.youtube.com/watch?v=..." spellcheck="false">
+          <button class="botao" id="btn-add-link">Adicionar</button>
+        </div>
+        <p class="recado" id="recado-link" hidden></p>
+
+        <ul class="lista" id="lista-trilha"></ul>
+        <p class="vazio" id="vazio-trilha">Sem links por enquanto.</p>
+      </div>
+    </section>
+
+    <!-- ---- FOTOS ---- -->
+    <section class="painel">
+      <div class="painel-topo">
+        <h2 class="painel-titulo">Fotos</h2>
+        <span class="marcador" id="conta-fotos">0 fotos</span>
+      </div>
+      <p class="painel-ajuda">Elas aparecem na ordem abaixo, uma de cada vez. Pode soltar centenas de uma vez — a Ciranda carrega só a que está na tela.</p>
+
+      <div class="solta" id="solta" tabindex="0" role="button" aria-label="Escolher fotos">
+        <span class="solta-texto">Arraste as fotos aqui ou clique para escolher</span>
+      </div>
+      <input type="file" id="campo-fotos" accept="image/*" multiple hidden>
+
+      <p class="progresso" id="progresso" hidden></p>
+
+      <div class="ferramentas" id="ferramentas" hidden>
+        <button class="botao-fino" id="btn-ordenar">Ordenar pelo nome do arquivo</button>
+        <button class="botao-fino perigo" id="btn-limpar">Remover todas</button>
+      </div>
+
+      <div class="grade" id="grade-fotos"></div>
+    </section>
+
+    <!-- ---- AJUSTES ---- -->
+    <section class="painel">
+      <div class="painel-topo">
+        <h2 class="painel-titulo">Ajustes</h2>
+      </div>
+
+      <div class="ajuste">
+        <label class="rotulo" for="campo-intervalo">Tempo de cada foto</label>
+        <div class="deslizante">
+          <input type="range" id="campo-intervalo" min="3" max="60" step="1" value="12">
+          <output class="numero" id="saida-intervalo">12s</output>
+        </div>
+      </div>
+
+      <div class="ajuste">
+        <span class="rotulo">Ordem</span>
+        <div class="opcoes">
+          <label class="opcao">
+            <input type="radio" name="ordem" value="fixa" checked>
+            <span class="opcao-corpo">
+              <span class="opcao-nome">Na ordem</span>
+              <span class="opcao-nota">Segue a lista de cima para baixo. Para cardápio, catálogo, portfólio.</span>
+            </span>
+          </label>
+          <label class="opcao">
+            <input type="radio" name="ordem" value="sorteada">
+            <span class="opcao-corpo">
+              <span class="opcao-nome">Sorteada</span>
+              <span class="opcao-nota">Embaralha e sorteia de novo a cada volta. Para festa e retrospectiva.</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="ajuste">
+        <span class="rotulo">Disposição na tela</span>
+        <div class="opcoes">
+          <label class="opcao">
+            <input type="radio" name="layout" value="so-foto" checked>
+            <span class="opcao-corpo">
+              <span class="opcao-nome">Só as fotos</span>
+              <span class="opcao-nota">O vídeo fica escondido, só o som aparece.</span>
+            </span>
+          </label>
+          <label class="opcao">
+            <input type="radio" name="layout" value="canto">
+            <span class="opcao-corpo">
+              <span class="opcao-nome">Fotos e vídeo</span>
+              <span class="opcao-nota">O vídeo fica pequeno no canto da tela.</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="ajuste">
+        <span class="rotulo">Rodapé</span>
+
+        <div class="imagem-campo">
+          <div class="imagem-mostra" id="mostra-logo">
+            <span class="imagem-vazia">Sem logotipo</span>
+          </div>
+          <div class="imagem-acoes">
+            <button class="botao-fino" id="btn-logo">Escolher logotipo</button>
+            <button class="botao-fino perigo" id="btn-logo-tirar" hidden>Remover</button>
+            <p class="imagem-nota">PNG com fundo transparente funciona. O arquivo é guardado como veio, sem recorte nem conversão.</p>
+          </div>
+        </div>
+        <input type="file" id="campo-logo" accept="image/*" hidden>
+
+        <label class="chave sem-topo">
+          <input type="checkbox" id="campo-logo-fundo">
+          <span>Plaquinha clara atrás do logotipo</span>
+        </label>
+
+        <input type="text" id="campo-nome" class="campo espaco-acima" placeholder="Ex.: Bar do Cais, ou Ana e Rui" maxlength="40">
+
+        <label class="chave">
+          <input type="checkbox" id="campo-rodape-nome" checked>
+          <span>Mostrar o nome</span>
+        </label>
+        <label class="chave">
+          <input type="checkbox" id="campo-rodape-hora" checked>
+          <span>Mostrar a hora</span>
+        </label>
+      </div>
+    </section>
+
+
+    <!-- ---- ABERTURA ---- -->
+    <section class="painel">
+      <div class="painel-topo">
+        <h2 class="painel-titulo">Abertura</h2>
+        <span class="marcador" id="conta-abertura">desligada</span>
+      </div>
+      <p class="painel-ajuda">Uma tela que aparece por alguns segundos antes da ciranda começar, com uma imagem grande e um título por cima. A música já entra junto com ela.</p>
+
+      <label class="chave sem-topo">
+        <input type="checkbox" id="campo-abertura">
+        <span>Abrir com uma tela de apresentação</span>
+      </label>
+
+      <div id="bloco-abertura" hidden>
+        <div class="imagem-campo espaco-acima">
+          <div class="imagem-mostra escura" id="mostra-abertura">
+            <span class="imagem-vazia">Sem imagem</span>
+          </div>
+          <div class="imagem-acoes">
+            <button class="botao-fino" id="btn-abertura">Escolher imagem</button>
+            <button class="botao-fino perigo" id="btn-abertura-tirar" hidden>Remover</button>
+            <p class="imagem-nota">Ocupa a tela inteira. Sem imagem, o título aparece sobre o cinza.</p>
+          </div>
+        </div>
+        <input type="file" id="campo-abertura-imagem" accept="image/*" hidden>
+
+        <input type="text" id="campo-abertura-titulo" class="campo espaco-acima" placeholder="Título — vazio usa o nome do rodapé" maxlength="60">
+        <input type="text" id="campo-abertura-sub" class="campo espaco-fino" placeholder="Linha de baixo — data, lugar, o que quiser" maxlength="60">
+
+        <div class="ajuste">
+          <label class="rotulo" for="campo-abertura-tempo">Quanto tempo fica</label>
+          <div class="deslizante">
+            <input type="range" id="campo-abertura-tempo" min="2" max="20" step="1" value="6">
+            <output class="numero" id="saida-abertura-tempo">6s</output>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="barra">
+    <p class="barra-dica">Depois de iniciar: no Chrome, <strong>⋮ → Transmitir → Origens → Transmitir aba</strong>, e marque para enviar o áudio.</p>
+    <button class="botao-forte" id="btn-exibir">Iniciar exibição</button>
+  </div>
+
+</div>
+
+<!-- ============ TELA DE EXIBIÇÃO ============ -->
+<div class="exibicao" id="exibicao" hidden>
+  <div class="palco" id="palco" data-layout="so-foto">
+    <div class="som" id="som"></div>
+    <audio id="tocador" hidden></audio>
+    <div class="fotos">
+      <img class="foto" id="foto-a" alt="">
+      <img class="foto" id="foto-b" alt="">
+    </div>
+    <p class="sem-foto" id="sem-foto" hidden>Nenhuma foto adicionada ainda</p>
+
+    <div class="atalhos" id="atalhos">
+      <span>Esc sair</span><span>← → foto</span><span>Espaço pausar</span><span>R religar o som</span>
+    </div>
+  </div>
+
+  <div class="rodape-tv" id="rodape-tv">
+    <div class="rodape-marca">
+      <img class="rodape-logo" id="rodape-logo" alt="" hidden>
+      <span class="rodape-nome" id="rodape-nome"></span>
+    </div>
+    <span class="rodape-hora" id="rodape-hora"></span>
+  </div>
+
+  <div class="abertura" id="abertura" hidden>
+    <img class="abertura-foto" id="abertura-foto" alt="">
+    <div class="abertura-veu"></div>
+    <div class="abertura-texto">
+      <p class="abertura-titulo" id="abertura-titulo"></p>
+      <p class="abertura-sub" id="abertura-sub"></p>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  // O trabalhador de serviço serve para a Ciranda poder ser instalada e
+  // abrir offline. Nenhuma foto passa por ele: elas já estão no banco.
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

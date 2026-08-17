@@ -1,0 +1,865 @@
+/* ============================================================
+   Ciranda
+   Paleta e formas emprestadas do azulejo: cobalto sobre esmalte.
+   ============================================================ */
+
+:root {
+  --grafite-0:  #17171A;
+  --grafite-1:  #1F1F23;
+  --grafite-2:  #2C2C30;
+  --grafite-3:  #3A3A40;
+  --creme:      #F2F0EB;
+  --creme-2:    #DAD6CD;
+  --texto:      #26262A;
+  --texto-2:    #6A6A72;
+  --ambar:      #E8A33D;
+  --ambar-2:    #C9822A;
+  --ambar-3:    #8A5A12;
+
+  --display: 'Arial Black', 'Arial Bold', 'Helvetica Neue', Impact, sans-serif;
+  --corpo: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --conta: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, monospace;
+}
+
+/* --- o padrão de azulejo, assinatura da interface --- */
+/* ============================================================
+   Base
+   ============================================================ */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--corpo);
+  color: var(--texto);
+  background-color: var(--grafite-1);
+}
+
+button, input { font-family: inherit; font-size: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--ambar-2);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Tela de configuração
+   ============================================================ */
+
+.config {
+  min-height: 100%;
+  padding: 0 24px 132px;
+  background: var(--grafite-1);
+}
+
+.config[hidden] { display: none; }
+
+/* --- cabeçalho --- */
+
+.cabeca {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 56px 0 36px;
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+}
+
+.cabeca-selo {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+  background: url('icones/icone128.png') center / contain no-repeat;
+}
+
+.titulo {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(42px, 6.5vw, 66px);
+  line-height: .92;
+  letter-spacing: -.025em;
+  text-transform: uppercase;
+  color: var(--creme);
+}
+
+.linha-fina {
+  margin: 16px 0 0;
+  max-width: 46ch;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(242, 240, 235, .70);
+}
+
+/* --- painéis --- */
+
+.pilha {
+  max-width: 880px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.painel {
+  background: var(--creme);
+  border-radius: 4px;
+  border-top: 4px solid var(--ambar-2);
+  padding: 24px 26px 28px;
+}
+
+.painel-topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.painel-titulo {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 20px;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  color: var(--grafite-1);
+}
+
+.marcador {
+  font-family: var(--conta);
+  font-size: 12px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--ambar-3);
+}
+
+.painel-ajuda {
+  margin: 10px 0 20px;
+  max-width: 62ch;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #57637A;
+}
+
+/* --- campos --- */
+
+.campo {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid var(--creme-2);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--texto);
+}
+
+.campo::placeholder { color: #97A1B0; }
+.campo:focus { border-color: var(--ambar-2); outline: none; }
+
+.entrada-dupla {
+  display: flex;
+  gap: 10px;
+}
+
+.entrada-dupla .campo { flex: 1 1 auto; }
+
+.botao {
+  flex: 0 0 auto;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 3px;
+  background: var(--grafite-1);
+  color: var(--creme);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botao:hover { background: var(--grafite-2); }
+
+.recado {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--ambar-2);
+  font-weight: 600;
+}
+
+/* --- lista da trilha --- */
+
+.lista {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lista:empty { margin: 0; }
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1.5px solid var(--creme-2);
+  border-radius: 3px;
+  background: #fff;
+}
+
+.item-ordem {
+  flex: 0 0 auto;
+  width: 26px;
+  font-family: var(--conta);
+  font-size: 13px;
+  color: var(--ambar-3);
+}
+
+.item-corpo { flex: 1 1 auto; min-width: 0; }
+
+.item-nome {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-bottom: 1.5px solid transparent;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto);
+}
+
+.item-nome::placeholder { color: #97A1B0; font-weight: 500; font-style: italic; }
+.item-nome:hover { border-bottom-color: var(--creme-2); }
+.item-nome:focus { border-bottom-color: var(--ambar-2); outline: none; }
+
+.item-ref {
+  display: block;
+  font-family: var(--conta);
+  font-size: 12px;
+  color: #7A8496;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selo-playlist {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 2px;
+  background: rgba(232, 163, 61, .16);
+  color: var(--ambar-2);
+  font-family: var(--conta);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.vazio {
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: #7A8496;
+  font-style: italic;
+}
+
+.vazio[hidden] { display: none; }
+
+/* --- botõezinhos de ação --- */
+
+.mini {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1.5px solid var(--creme-2);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--grafite-1);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mini:hover:not(:disabled) { border-color: var(--ambar-2); color: var(--ambar-2); }
+.mini:disabled { opacity: .3; cursor: default; }
+.mini.perigo:hover { border-color: var(--ambar-2); color: var(--ambar-2); }
+
+/* --- área de soltar fotos --- */
+
+.solta {
+  display: grid;
+  place-items: center;
+  min-height: 120px;
+  padding: 20px;
+  border: 2px dashed var(--creme-2);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+}
+
+.solta:hover, .solta.ativa {
+  border-color: var(--ambar-2);
+  background: rgba(232, 163, 61, .08);
+}
+
+.solta-texto {
+  font-size: 14px;
+  font-weight: 600;
+  color: #57637A;
+}
+
+/* --- grade de fotos --- */
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.grade:empty { margin-top: 0; }
+
+.cartao {
+  border: 1.5px solid var(--creme-2);
+  border-radius: 3px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.cartao-imagem {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--creme-2);
+}
+
+.cartao-pe {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 8px;
+  border-top: 1.5px solid var(--creme-2);
+}
+
+.cartao-ordem {
+  flex: 1 1 auto;
+  font-family: var(--conta);
+  font-size: 12px;
+  color: var(--ambar-3);
+}
+
+/* --- ferramentas da grade e progresso de importação --- */
+
+.ferramentas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.ferramentas[hidden] { display: none; }
+
+.botao-fino {
+  padding: 8px 14px;
+  border: 1.5px solid var(--creme-2);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--grafite-1);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botao-fino:hover { border-color: var(--ambar-2); color: var(--ambar-2); }
+.botao-fino.perigo:hover { border-color: var(--ambar-2); color: var(--ambar-2); }
+
+.progresso {
+  margin: 14px 0 0;
+  font-family: var(--conta);
+  font-size: 13px;
+  color: var(--ambar-3);
+}
+
+.progresso[hidden] { display: none; }
+
+/* O recado das fotos que o navegador não abriu: fica na tela depois da
+   importação, então é texto de ler, não contador. */
+.progresso.atencao {
+  font-family: var(--corpo);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  max-width: 62ch;
+  color: var(--ambar-3);
+}
+
+/* --- ajustes --- */
+
+.ajuste { margin-top: 22px; }
+.ajuste:first-of-type { margin-top: 4px; }
+
+.rotulo {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--grafite-1);
+}
+
+.deslizante {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.deslizante input[type="range"] {
+  flex: 1 1 auto;
+  accent-color: var(--ambar-2);
+}
+
+.numero {
+  flex: 0 0 auto;
+  min-width: 54px;
+  font-family: var(--conta);
+  font-size: 15px;
+  color: var(--grafite-1);
+}
+
+.opcoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.opcao {
+  display: flex;
+  gap: 10px;
+  padding: 13px 14px;
+  border: 1.5px solid var(--creme-2);
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.opcao:has(input:checked) {
+  border-color: var(--ambar-2);
+  background: rgba(232, 163, 61, .10);
+}
+
+.opcao input { margin-top: 2px; accent-color: var(--ambar-2); }
+.opcao-corpo { display: block; }
+.opcao-nome { display: block; font-size: 14px; font-weight: 600; }
+.opcao-nota { display: block; margin-top: 3px; font-size: 12.5px; color: #7A8496; }
+
+.chave {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.chave input { accent-color: var(--ambar-2); width: 17px; height: 17px; }
+
+/* --- barra fixa --- */
+
+.barra {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 24px;
+  background: var(--grafite-2);
+  border-top: 3px solid var(--ambar-2);
+}
+
+.barra-dica {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(242, 240, 235, .76);
+}
+
+.barra-dica strong { color: var(--creme); font-weight: 600; }
+
+.botao-forte {
+  flex: 0 0 auto;
+  padding: 15px 28px;
+  border: none;
+  border-radius: 3px;
+  background: var(--ambar);
+  color: var(--grafite-0);
+  font-family: var(--display);
+  font-size: 14px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.botao-forte:hover { background: var(--ambar-2); }
+
+/* ============================================================
+   Tela de exibição
+   ============================================================ */
+
+.exibicao {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--grafite-0);
+}
+
+.exibicao[hidden] { display: none; }
+
+.palco {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+  background: var(--grafite-0);
+}
+
+/* o player fica atrás de tudo; no modo "canto" ele sobe para a frente */
+.som {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.som iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.fotos {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 900ms ease-in-out;
+}
+
+.foto.visivel { opacity: 1; }
+
+/* No modo "só o cardápio" o player ocupa a tela inteira por trás,
+   então a camada de fotos precisa ser opaca — e repete o azulejo
+   para a moldura ao redor da foto não virar um retângulo morto. */
+/* No modo "só as fotos" o player ocupa a tela inteira por trás, então
+   esta camada precisa ser opaca. Cinza neutro de propósito: é moldura
+   de galeria, não deve competir com a cor das fotos. */
+.palco[data-layout="so-foto"] .fotos { background: var(--grafite-0); }
+
+.palco[data-layout="canto"] .fotos { background: none; }
+
+.palco[data-layout="canto"] .som {
+  inset: auto 2.4vw 2.4vw auto;
+  z-index: 3;
+  width: 26vw;
+  height: calc(26vw * 9 / 16);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 0 0 2px var(--ambar), 0 18px 40px rgba(0, 0, 0, .6);
+}
+
+.sem-foto {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font-family: var(--display);
+  font-size: 22px;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: rgba(242, 240, 235, .45);
+}
+
+.sem-foto[hidden] { display: none; }
+
+/* --- rodapé da TV --- */
+
+.rodape-tv {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 32px;
+  background: var(--grafite-1);
+  border-top: 3px solid var(--ambar-2);
+}
+
+.rodape-tv[hidden] { display: none; }
+
+.rodape-nome {
+  font-family: var(--display);
+  font-size: clamp(16px, 2.2vw, 30px);
+  letter-spacing: -.01em;
+  text-transform: uppercase;
+  color: var(--creme);
+}
+
+.rodape-hora {
+  font-family: var(--conta);
+  font-size: clamp(15px, 2vw, 28px);
+  color: var(--ambar);
+}
+
+/* --- atalhos, somem sozinhos --- */
+
+.atalhos {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 18px;
+  padding: 9px 18px;
+  border-radius: 3px;
+  background: rgba(23, 23, 26, .9);
+  font-family: var(--conta);
+  font-size: 12px;
+  letter-spacing: .03em;
+  color: rgba(242, 240, 235, .8);
+  opacity: 1;
+  transition: opacity 600ms ease;
+  z-index: 5;
+}
+
+.atalhos.some { opacity: 0; }
+
+/* ============================================================
+   Telas estreitas
+   ============================================================ */
+
+@media (max-width: 620px) {
+  .config { padding: 0 16px 168px; }
+  .cabeca { flex-direction: column; padding-top: 34px; }
+  .painel { padding: 20px 18px 24px; }
+  .entrada-dupla { flex-direction: column; }
+  .barra { flex-direction: column; align-items: stretch; gap: 12px; }
+  .botao-forte { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foto, .atalhos { transition: none; }
+}
+
+/* ============================================================
+   Logotipo e imagem de abertura
+   ============================================================ */
+
+.imagem-campo {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.espaco-acima { margin-top: 16px; }
+.espaco-fino { margin-top: 8px; }
+.chave.sem-topo { margin-top: 4px; }
+
+/* O xadrez atrás da prévia mostra a transparência de um PNG em vez
+   de fingir um fundo branco que não existe no arquivo. */
+/* O xadrez mostra a transparência do PNG, mas em tons escuros: o
+   logotipo vai aparecer sobre o rodapé grafite, e uma prévia sobre
+   branco esconderia justamente os logotipos claros. */
+.imagem-mostra {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 132px;
+  height: 84px;
+  padding: 6px;
+  border: 1.5px solid var(--creme-2);
+  border-radius: 3px;
+  background-color: var(--grafite-1);
+  background-image:
+    linear-gradient(45deg, #2A2A2F 25%, transparent 25%, transparent 75%, #2A2A2F 75%),
+    linear-gradient(45deg, #2A2A2F 25%, transparent 25%, transparent 75%, #2A2A2F 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 7px 7px;
+  overflow: hidden;
+}
+
+.imagem-mostra.escura { background-image: none; }
+
+.imagem-mostra img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.imagem-vazia {
+  font-size: 12px;
+  font-style: italic;
+}
+
+.imagem-mostra .imagem-vazia { color: rgba(242, 240, 235, .55); }
+
+.imagem-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.imagem-nota {
+  flex: 1 1 100%;
+  margin: 0;
+  max-width: 46ch;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--texto-2);
+}
+
+/* --- rodapé da TV com logotipo --- */
+
+.rodape-marca {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+}
+
+.rodape-logo {
+  flex: 0 0 auto;
+  height: clamp(26px, 4.4vw, 54px);
+  width: auto;
+  max-width: 34vw;
+  object-fit: contain;
+}
+
+.rodape-logo[hidden] { display: none; }
+.rodape-hora[hidden] { display: none; }
+
+/* --- tela de abertura --- */
+
+.abertura {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: var(--grafite-0);
+  opacity: 1;
+  transition: opacity 900ms ease;
+}
+
+.abertura[hidden] { display: none; }
+.abertura.saindo { opacity: 0; }
+
+.abertura-foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.abertura-foto[hidden] { display: none; }
+
+/* O véu garante que o título continue legível sobre qualquer foto. */
+.abertura-veu {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(23,23,26,.25) 0%, rgba(23,23,26,.72) 100%);
+}
+
+.abertura-texto {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 0 6vw 7vh;
+  text-align: center;
+}
+
+.abertura-titulo {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(28px, 7vw, 92px);
+  line-height: 1;
+  letter-spacing: -.02em;
+  text-transform: uppercase;
+  color: var(--creme);
+}
+
+.abertura-sub {
+  margin: clamp(10px, 1.6vh, 22px) 0 0;
+  font-size: clamp(14px, 2.1vw, 30px);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ambar);
+}
+
+.abertura-sub:empty { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .abertura { transition: none; }
+}
+
+/* --- plaquinha clara para logotipos escuros --- */
+
+.rodape-logo.com-fundo {
+  background: var(--creme);
+  padding: clamp(4px, .6vw, 9px) clamp(7px, 1vw, 14px);
+  border-radius: 4px;
+  box-sizing: content-box;
+}
+
+/* A prévia mostra a plaquinha do mesmo jeito, senão ela mentiria
+   sobre o que vai aparecer na TV. */
+.imagem-mostra.com-fundo img {
+  background: var(--creme);
+  padding: 5px 8px;
+  border-radius: 3px;
+  box-sizing: content-box;
+}
+
+/* --- título de item que não é editável (músicas) --- */
+
+.item-titulo {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- aviso de página aberta fora de um servidor --- */
+
+.alerta {
+  max-width: 880px;
+  margin: 24px auto 0;
+  padding: 14px 18px;
+  border-left: 4px solid var(--ambar);
+  border-radius: 0;
+  background: var(--grafite-2);
+  color: var(--creme);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.alerta[hidden] { display: none; }
