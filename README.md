@@ -187,6 +187,8 @@ publicar. O `package.json` existe só para os testes.
 
 ## Testes
 
+[![testes](https://github.com/FreitasAssis/ciranda/actions/workflows/testes.yml/badge.svg)](https://github.com/FreitasAssis/ciranda/actions/workflows/testes.yml)
+
 Rodam num Chromium de verdade, porque tudo que importa aqui é comportamento de
 navegador: tela cheia, IndexedDB, decodificação de imagem e o trabalhador de
 serviço. Nada disso um teste de mentirinha pega.
@@ -197,7 +199,9 @@ npx playwright install chromium
 npm run teste
 ```
 
-`npm run teste:ver` abre o navegador para acompanhar.
+`npm run teste:ver` abre o navegador para acompanhar. A cada push em `main` e
+em cada pull request a suíte roda sozinha pelo GitHub Actions; quando falha,
+o rastro das falhas fica anexado à execução.
 
 ## Decisões que valem saber
 

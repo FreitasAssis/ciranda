@@ -95,6 +95,23 @@ button, input { font-family: inherit; font-size: inherit; }
   color: rgba(242, 240, 235, .70);
 }
 
+/* --- assinatura --- */
+
+.credito {
+  margin: 6px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(242, 240, 235, .45);
+}
+
+.credito a {
+  color: rgba(242, 240, 235, .74);
+  text-decoration-color: rgba(242, 240, 235, .28);
+  text-underline-offset: 3px;
+}
+
+.credito a:hover { color: var(--ambar); }
+
 /* --- painéis --- */
 
 .pilha {

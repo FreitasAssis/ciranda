@@ -1,0 +1,42 @@
+# A suíte roda num Chromium de verdade, então o CI precisa instalar o
+# navegador. É o preço de testar tela cheia, IndexedDB e trabalhador de
+# serviço em vez de fingir que eles existem.
+
+name: testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  chromium:
+    name: Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar as dependências
+        run: npm ci
+
+      - name: Instalar o Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Rodar a suíte
+        run: npm run teste
+
+      - name: Guardar o rastro das falhas
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rastro-das-falhas
+          path: test-results/
+          retention-days: 7
