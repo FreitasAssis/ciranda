@@ -177,15 +177,6 @@ originais em outra pasta.
 
 # Para quem mexe no código
 
-## Publicar no GitHub Pages
-
-1. Crie um repositório e suba o conteúdo desta pasta na raiz.
-2. Em **Settings → Pages**, escolha a branch (`main`) e a pasta `/ (root)`.
-3. Aguarde alguns minutos. O endereço será `https://SEU-USUARIO.github.io/ciranda/`.
-
-Precisa ser `https://`. Aberta direto do disco, com `file://`, a página avisa e
-o player do YouTube não funciona — ele exige uma origem de verdade.
-
 ## Estrutura
 
 ```
