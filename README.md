@@ -11,6 +11,8 @@ ciranda: fotos girando, música tocando.
 Site estático, sem servidor e sem conta. As fotos, as músicas e os ajustes
 ficam no navegador de quem usa e não saem dali.
 
+**No ar em [freitasassis.github.io/ciranda](https://freitasassis.github.io/ciranda/).**
+
 Feito por [Luiz Freitas](https://luizfreitas.com.br/). Licença MIT.
 
 ---
