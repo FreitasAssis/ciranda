@@ -1,39 +1,126 @@
 import { test, expect } from '@playwright/test';
-import { abrir, foto, musica, importarFotos } from './ajuda.js';
+import { abrir, foto, importarFotos } from './ajuda.js';
 
-/* O Chrome só concede tela cheia enquanto o clique do usuário ainda vale
-   — cerca de cinco segundos. Se a Ciranda pedir tela cheia depois de ler
-   o banco e ligar a trilha, uma ciranda pesada perde a janela e a
-   exibição abre dentro da aba, que é justamente o que não pode acontecer
-   na hora de transmitir para a TV. */
+/* A tela cheia deixou de ser automática. Ela servia ao computador de
+   quem opera, não à TV: transmitir aba manda o conteúdo da aba, e a
+   barra do navegador nunca vai junto de qualquer jeito. Automática, ela
+   escondia o menu de transmitir e obrigava a ligar a transmissão antes
+   de começar. Sob demanda, dá para transmitir de dentro da exibição. */
 
-test('pede tela cheia enquanto o clique ainda vale, mesmo com trilha lenta', async ({ page }) => {
+const VIDEO = 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
+
+async function exibindo(page, { comTrilha = false } = {}) {
+  await page.route('**://*.youtube.com/**', (rota) => rota.abort());
   await abrir(page);
   await importarFotos(page, [foto(60, 40), foto(80, 50)]);
 
-  await page.check('input[name="fonte"][value="arquivos"]');
-  await page.setInputFiles('#campo-musicas', [musica()]);
-  await expect(page.locator('#lista-musicas li')).toHaveCount(1);
-
-  await page.evaluate(() => {
-    window.__registro = { ativoNoPedido: null };
-
-    Element.prototype.requestFullscreen = function () {
-      window.__registro.ativoNoPedido = navigator.userActivation.isActive;
-      return Promise.resolve();
-    };
-
-    // Uma faixa grande demora a começar. Seis segundos passam da validade
-    // do clique, que no Chrome é de cinco.
-    HTMLMediaElement.prototype.play = function () {
-      return new Promise((ok) => setTimeout(ok, 6000));
-    };
-  });
+  if (comTrilha) {
+    await page.fill('#campo-link', VIDEO);
+    await page.click('#btn-add-link');
+    await expect(page.locator('#lista-trilha li')).toHaveCount(1);
+  }
 
   await page.click('#btn-exibir');
+  await expect(page.locator('#exibicao')).toBeVisible();
+}
 
-  await page.waitForFunction(() => window.__registro.ativoNoPedido !== null, null, { timeout: 20000 });
-  const ativo = await page.evaluate(() => window.__registro.ativoNoPedido);
+const emTelaCheia = (page) => page.evaluate(() => !!document.fullscreenElement);
 
-  expect(ativo, 'a tela cheia foi pedida depois que o clique perdeu a validade').toBe(true);
+test('iniciar a exibição não entra em tela cheia sozinho', async ({ page }) => {
+  await exibindo(page);
+
+  await page.waitForTimeout(600);
+  expect(await emTelaCheia(page),
+    'em tela cheia o menu de transmitir some, e era isso que travava o fluxo').toBe(false);
+});
+
+test('F entra e sai da tela cheia', async ({ page }) => {
+  await exibindo(page);
+
+  await page.keyboard.press('f');
+  await expect.poll(() => emTelaCheia(page)).toBe(true);
+
+  await page.keyboard.press('f');
+  await expect.poll(() => emTelaCheia(page)).toBe(false);
+});
+
+test('F funciona mesmo sem trilha do YouTube', async ({ page }) => {
+  await exibindo(page, { comTrilha: false });
+
+  await page.keyboard.press('f');
+  await expect.poll(() => emTelaCheia(page),
+    'tela cheia não tem nada a ver com vídeo').toBe(true);
+});
+
+test('o botão faz o mesmo e diz o que faz', async ({ page }) => {
+  await exibindo(page, { comTrilha: true });
+
+  const botao = page.locator('#btn-tela');
+  await expect(botao).toBeVisible();
+  await expect(botao).toHaveText('Tela cheia');
+
+  await botao.click();
+  await expect.poll(() => emTelaCheia(page)).toBe(true);
+  await expect(botao).toHaveText('Sair da tela cheia');
+
+  await botao.click();
+  await expect.poll(() => emTelaCheia(page)).toBe(false);
+  await expect(botao).toHaveText('Tela cheia');
+});
+
+test.describe('sair da tela cheia', () => {
+
+  test('não encerra a exibição, porque sair é justamente para transmitir', async ({ page }) => {
+    await exibindo(page);
+
+    await page.keyboard.press('f');
+    await expect.poll(() => emTelaCheia(page)).toBe(true);
+
+    await page.evaluate(() => document.exitFullscreen());
+    await expect.poll(() => emTelaCheia(page)).toBe(false);
+
+    await expect(page.locator('#exibicao')).toBeVisible();
+    await expect(page.locator('#config')).toBeHidden();
+  });
+
+  test('devolve o teclado à Ciranda', async ({ page }) => {
+    await exibindo(page, { comTrilha: true });
+
+    await page.keyboard.press('f');
+    await expect.poll(() => emTelaCheia(page)).toBe(true);
+
+    // Um clique no player do YouTube prende o foco no iframe.
+    await page.evaluate(() => document.querySelector('#som iframe').focus());
+    expect(await page.evaluate(() => document.activeElement.tagName)).toBe('IFRAME');
+
+    await page.evaluate(() => document.exitFullscreen());
+
+    await expect.poll(() => page.evaluate(() => document.activeElement.id),
+      { message: 'o foco ficou no player e o Esc não chegaria à Ciranda' }).toBe('palco');
+  });
+
+  test('e o Esc continua sendo o caminho de volta aos ajustes', async ({ page }) => {
+    await exibindo(page);
+
+    await page.keyboard.press('f');
+    await expect.poll(() => emTelaCheia(page)).toBe(true);
+    await page.evaluate(() => document.exitFullscreen());
+    await expect.poll(() => emTelaCheia(page)).toBe(false);
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#config')).toBeVisible();
+  });
+
+});
+
+test('a barra de atalhos anuncia o F mesmo sem trilha', async ({ page }) => {
+  await exibindo(page, { comTrilha: false });
+
+  await expect(page.locator('#atalho-tela')).toBeVisible();
+});
+
+test('a tela de ajustes lista o F junto das outras teclas', async ({ page }) => {
+  await abrir(page);
+
+  await expect(page.locator('#instrucoes').getByText('F', { exact: true })).toBeVisible();
 });

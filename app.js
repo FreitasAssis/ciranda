@@ -700,6 +700,18 @@ let relogioBotaoVideo = null;
    permite chamar o player, clicar em "Pular anúncio" e sumir com ele, ou
    pôr o jogo em tela cheia no meio da festa. Nada disso é salvo — a
    exibição seguinte recomeça pelos ajustes. */
+/* A tela cheia serve ao computador de quem opera, não à TV: transmitir
+   aba manda o conteúdo da aba, e a barra do navegador nunca vai junto.
+   Automática, ela escondia o menu de transmitir e obrigava a ligar a
+   transmissão antes de começar. Sob demanda, dá para transmitir de
+   dentro da exibição. */
+function alternarTelaCheia() {
+  if (!exibindo) return;
+
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  else document.documentElement.requestFullscreen().catch(() => {});
+}
+
 function aplicarDisposicao() {
   const palco = $('palco');
   palco.dataset.principal = ajustes.principal;
@@ -736,6 +748,7 @@ function atualizarControles() {
   const palco = $('palco');
   const outro = palco.dataset.principal === 'video' ? 'Fotos' : 'Vídeo';
 
+  $('btn-tela').textContent = document.fullscreenElement ? 'Sair da tela cheia' : 'Tela cheia';
   $('btn-trocar').textContent = `${outro} na tela toda`;
   $('btn-video').textContent = palco.dataset.secundario === 'sim'
     ? 'Esconder a telinha'
@@ -816,12 +829,6 @@ async function montarSequencia() {
 }
 
 async function iniciarExibicao() {
-  // A tela cheia é pedida antes de qualquer espera. O Chrome só concede
-  // enquanto o clique ainda vale, e ler o banco de uma ciranda grande e
-  // ligar a trilha pode passar desse prazo.
-  const telaCheia = document.documentElement.requestFullscreen?.();
-  if (telaCheia) telaCheia.catch(() => { /* segue sem */ });
-
   await montarSequencia();
 
   $('config').hidden = true;
@@ -1101,6 +1108,8 @@ document.addEventListener('keydown', (evento) => {
     return;
   }
 
+  if (tecla === 'f' || tecla === 'F') { alternarTelaCheia(); return; }
+
   if (tecla === 't' || tecla === 'T') { trocarPrincipal(); return; }
 
   if (tecla === 'v' || tecla === 'V') { alternarVideo(); return; }
@@ -1286,12 +1295,17 @@ function ligarInterface() {
   $('btn-trocar').addEventListener('click', trocarPrincipal);
   $('btn-video').addEventListener('click', alternarVideo);
 
-  // Com o vídeo ocupando a tela, um clique no player prende o foco do
-  // teclado no iframe e o Esc da Ciranda não chega mais. O Esc do
-  // navegador ainda sai da tela cheia, e é por aqui que isso vira o
-  // encerramento de verdade em vez de uma exibição pela metade.
+  $('btn-tela').addEventListener('click', alternarTelaCheia);
+
+  // Sair da tela cheia costuma ser para mexer no navegador — transmitir,
+  // por exemplo. A exibição continua; o que volta é o teclado, que pode
+  // ter ficado preso no player do YouTube, e é ele que faz o Esc chegar.
   document.addEventListener('fullscreenchange', () => {
-    if (exibindo && !document.fullscreenElement) encerrarExibicao();
+    if (!exibindo) return;
+    atualizarControles();
+    // Só ao sair. Entrar em tela cheia não tem por que roubar o foco de
+    // onde a pessoa estava.
+    if (!document.fullscreenElement) $('palco').focus();
   });
 
   $('exibicao').addEventListener('mousemove', () => {

@@ -95,6 +95,30 @@ button, input { font-family: inherit; font-size: inherit; }
   color: rgba(242, 240, 235, .70);
 }
 
+/* --- painel que recolhe --- */
+
+/* Consulta, não etapa: texto longo que se lê uma vez e depois só
+   atrapalha. Recolhido de origem, com o título e as marcas à mostra
+   para ninguém precisar adivinhar o que tem dentro. */
+.dobravel summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.dobravel summary::-webkit-details-marker { display: none; }
+
+.dobravel summary::after {
+  content: '▸';
+  display: inline-block;
+  flex: 0 0 auto;
+  color: var(--ambar-2);
+  transition: transform 200ms ease;
+}
+
+.dobravel details[open] summary::after { transform: rotate(90deg); }
+
+.dobravel summary:hover .painel-titulo { color: var(--ambar-3); }
+
 /* --- subtítulo dentro de um painel --- */
 
 .sub-titulo {
@@ -701,12 +725,18 @@ button, input { font-family: inherit; font-size: inherit; }
 
 /* --- os botões que arranjam a tela, um par para cada tecla --- */
 
+/* Empilhados, e não lado a lado: a barra de atalhos é centralizada, e
+   uma fileira horizontal de três botões cruzava com ela — a barra ficava
+   por cima e engolia o clique. Em coluna, o comprimento do rótulo deixa
+   de ser um limite. */
 .controles-tela {
   position: absolute;
   left: 24px;
   bottom: 24px;
   z-index: 5;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
   opacity: 1;
   transition: opacity 600ms ease;

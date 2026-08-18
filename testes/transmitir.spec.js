@@ -9,19 +9,49 @@ import { abrir } from './ajuda.js';
    TV não respondem a ele, então instrução só de Chromecast deixa muita
    gente sem caminho. */
 
-test('o rodapé manda transmitir antes de iniciar, não depois', async ({ page }) => {
+test('o rodapé aponta o painel, sem impor ordem nenhuma', async ({ page }) => {
   await abrir(page);
 
   const dica = page.locator('.barra-dica');
   await expect(dica).toBeVisible();
-  await expect(dica).toContainText('Antes de iniciar');
-  await expect(dica, 'em tela cheia não há menu do navegador para alcançar')
-    .not.toContainText('Depois de iniciar');
+  await expect(dica).toContainText('Transmitir para a TV');
+  await expect(dica, 'a exibição não entra mais em tela cheia sozinha')
+    .not.toContainText('Antes de iniciar');
 });
 
-test('e diz por que a ordem é essa', async ({ page }) => {
+test('e o painel não impõe mais a ordem, porque a barra do navegador fica à vista', async ({ page }) => {
   await abrir(page);
-  await expect(page.locator('.barra-dica')).toContainText('tela cheia');
+
+  const painel = page.locator('#transmitir');
+  await expect(painel).not.toContainText('antes de iniciar a exibição');
+  await expect(painel.locator('.alerta-ordem')).toHaveCount(0);
+});
+
+test.describe('o painel recolhe', () => {
+
+  test('começa encolhido, porque é consulta e não etapa', async ({ page }) => {
+    await abrir(page);
+
+    await expect(page.locator('#transmitir')).toBeVisible();
+    await expect(page.locator('#transmitir details')).not.toHaveAttribute('open', '');
+    await expect(page.locator('#transmitir .sub-titulo').first()).toBeHidden();
+  });
+
+  test('o título continua à vista, senão ninguém acha', async ({ page }) => {
+    await abrir(page);
+    await expect(page.locator('#transmitir summary')).toBeVisible();
+    await expect(page.locator('#transmitir summary')).toContainText('Transmitir para a TV');
+  });
+
+  test('abre ao clicar no título', async ({ page }) => {
+    await abrir(page);
+
+    await page.locator('#transmitir summary').click();
+
+    await expect(page.locator('#transmitir details')).toHaveAttribute('open', '');
+    await expect(page.locator('#transmitir .sub-titulo').first()).toBeVisible();
+  });
+
 });
 
 test.describe('o painel de transmissão', () => {
@@ -65,9 +95,9 @@ test.describe('o painel de transmissão', () => {
     await expect(painel).toContainText('notifica');
   });
 
-  test('limita a regra da ordem ao cast pelo navegador', async ({ page }) => {
+  test('diz que dá para ligar a transmissão a qualquer momento', async ({ page }) => {
     await abrir(page);
-    await expect(page.locator('#transmitir')).toContainText('antes de iniciar');
+    await expect(page.locator('#transmitir')).toContainText('qualquer momento');
   });
 
 });

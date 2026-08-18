@@ -82,9 +82,13 @@ nenhum.
 ## Transmitir para a TV
 
 Há três caminhos, e qual serve depende da TV, não da Ciranda. A mesma
-explicação fica na tela de ajustes, no painel **Transmitir para a TV**. Em
-todos: se aparecer uma opção de enviar o áudio junto, deixe marcada — é ela
-que leva a música.
+explicação fica na tela de ajustes, no painel **Transmitir para a TV**, que
+começa recolhido. Em todos: se aparecer uma opção de enviar o áudio junto,
+deixe marcada — é ela que leva a música.
+
+A transmissão pode ser ligada antes de iniciar a exibição ou já com ela
+rodando. A exibição não entra em tela cheia sozinha, então a barra do navegador
+continua à vista.
 
 ### 1. Pelo navegador, para Chromecast
 
@@ -100,17 +104,11 @@ aparecem na TV.
 | Brave, Opera, Vivaldi | Parentes do Chrome, mesmo caminho com outro nome de menu |
 | Firefox | Não fala Google Cast — use outro navegador, ou os caminhos 2 e 3 |
 
-**Este caminho precisa ser ligado antes de iniciar a exibição.** Não é
-preferência: iniciar entra em tela cheia, e em tela cheia o navegador esconde a
-própria barra de ferramentas — o menu de transmitir some junto. Quem inicia
-primeiro fica sem por onde transmitir e precisa apertar `Esc` para voltar.
-
 ### 2. Pelo sistema, para as outras TVs
 
 Samsung, LG mais antigas, Roku, Fire TV e Apple TV **não respondem** ao menu do
 navegador. Nesses casos quem espelha é o sistema — o que funciona com qualquer
-navegador, inclusive o Firefox, e a qualquer momento, porque não passa por
-menu que a tela cheia esconda.
+navegador, inclusive o Firefox.
 
 | Sistema | Caminho |
 |---|---|
@@ -139,6 +137,7 @@ não para exibir na TV.
 | `→` ou `Espaço` | Durante a abertura, pula direto para as fotos |
 | `←` `→` | Foto anterior / próxima |
 | `Espaço` | Pausa e retoma a troca automática |
+| `F` | Entra e sai da tela cheia |
 | `T` | Troca quem ocupa a tela toda: as fotos ou o vídeo |
 | `V` | Mostra e esconde a telinha do canto |
 | `R` | Religa a trilha do começo |
@@ -150,9 +149,8 @@ outro aparece num canto. Daí saem as quatro combinações — só as fotos, fot
 com a telinha do vídeo, vídeo com a fotinha, só o vídeo.
 
 O escolhido nos ajustes é o ponto de partida. Durante a exibição, `T` e `V`
-mudam isso na hora, e a mudança não fica salva. Cada uma das duas teclas tem
-seu par no canto inferior esquerdo da tela — dois botões que aparecem quando o
-mouse mexe.
+mudam isso na hora, e a mudança não fica salva. Cada tecla tem seu par no canto
+inferior esquerdo da tela — botões empilhados que aparecem quando o mouse mexe.
 
 Serve para pôr o jogo em tela cheia no meio da festa e devolver as fotos
 depois, ou para chamar o player só o tempo de clicar em **Pular anúncio**, que
@@ -165,10 +163,15 @@ o player cobre tudo, e se um clique nele prender o foco do teclado, são eles a
 Com a trilha vindo de arquivos de música não há o que trocar: `T` e `V` não
 fazem nada e o botão não aparece.
 
+**Tela cheia é sob demanda**, pela tecla `F` ou pelo botão. Ela serve ao
+computador de quem opera, não à TV: transmitir aba manda o conteúdo da aba, e a
+barra do navegador não vai junto de um jeito nem de outro. Sair da tela cheia
+não encerra a exibição — sair costuma ser justamente para mexer no navegador.
+
 **Depois de mexer no player, afaste o mouse dele.** Enquanto o cursor está em
 cima, o teclado pertence ao YouTube, e é ao sair que `Esc` e as setas voltam a
-ser da Ciranda. Sair da tela cheia por qualquer caminho também encerra a
-exibição.
+ser da Ciranda. Sair da tela cheia também devolve o teclado. Para voltar aos
+ajustes, `Esc`.
 
 ## Se algo não funcionar
 
@@ -278,11 +281,11 @@ no máximo quatro imagens em memória, sempre com a próxima já decodificada pa
 a transição não piscar. Criar o endereço da imagem não basta: a decodificação
 do JPEG só acontece quando alguém pede a imagem, e é ela que atrasa a troca.
 
-**Por que a tela cheia é pedida antes de tudo.** O Chrome só concede enquanto o
-clique do usuário ainda vale, cerca de cinco segundos. Ler o banco de uma
-ciranda grande e ligar a trilha pode passar disso, e aí a exibição abriria
-dentro da aba — justamente na hora de transmitir. O pedido vem antes de
-qualquer espera, e não deve voltar para o fim da função.
+**Por que a tela cheia não é automática.** Ela parece um ganho e não é: quem
+transmite uma aba manda o conteúdo da aba, e a barra do navegador nunca vai
+para a TV de qualquer forma. Automática, ela só escondia o menu de transmitir
+do próprio operador e obrigava a ligar a transmissão antes de começar. Sob
+demanda, pela tecla `F`, dá para transmitir de dentro da exibição.
 
 **Por que o player devolve o foco ao palco quando o mouse sai dele.** Clicar
 dentro de um iframe de outro domínio entrega o foco do teclado a ele, e a

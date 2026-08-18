@@ -247,16 +247,16 @@
     </section>
 
     <!-- ---- TRANSMITIR ---- -->
-    <section class="painel" id="transmitir">
-      <div class="painel-topo">
+    <section class="painel dobravel" id="transmitir">
+      <details>
+      <summary class="painel-topo">
         <h2 class="painel-titulo">Transmitir para a TV</h2>
-        <span class="marcador">antes de iniciar</span>
-      </div>
-      <p class="painel-ajuda">Há três caminhos, e qual serve depende da sua TV, não da Ciranda. Se aparecer uma opção de enviar o áudio junto, deixe sempre marcada — é ela que leva a música.</p>
+        <span class="marcador">Chromecast, Samsung, LG, Apple TV, HDMI</span>
+      </summary>
+      <p class="painel-ajuda">Guia de consulta, não um passo a cumprir agora: a transmissão pode ser ligada daqui ou já com a exibição rodando, a qualquer momento. Há três caminhos, e qual serve depende da sua TV, não da Ciranda. Se aparecer uma opção de enviar o áudio junto, deixe sempre marcada — é ela que leva a música.</p>
 
       <h3 class="sub-titulo">1. Pelo navegador, para Chromecast</h3>
       <p class="painel-ajuda">Serve para o Chromecast de pendurar na TV e para as TVs com <strong>Chromecast integrado</strong> — Sony, Philips, TCL, Hisense, e as LG de 2024 em diante. Vai só o conteúdo desta aba: a barra do navegador e o resto da sua área de trabalho não aparecem na TV.</p>
-      <p class="painel-ajuda alerta-ordem">Este é o caminho que precisa ser ligado <strong>antes de iniciar a exibição</strong>. Depois que ela começa, a tela cheia esconde a barra do navegador e o menu vai junto.</p>
 
       <dl class="teclas">
         <div class="tecla-par">
@@ -278,7 +278,7 @@
       </dl>
 
       <h3 class="sub-titulo">2. Pelo sistema, para as outras TVs</h3>
-      <p class="painel-ajuda">Samsung, LG mais antigas, Roku, Fire TV e Apple TV <strong>não respondem</strong> ao menu do navegador. Nesses casos quem espelha é o sistema, e aí funciona com qualquer navegador — inclusive o Firefox — e a qualquer momento, porque não depende de menu que a tela cheia esconde.</p>
+      <p class="painel-ajuda">Samsung, LG mais antigas, Roku, Fire TV e Apple TV <strong>não respondem</strong> ao menu do navegador. Nesses casos quem espelha é o sistema, e aí funciona com qualquer navegador, inclusive o Firefox.</p>
 
       <dl class="teclas">
         <div class="tecla-par">
@@ -297,6 +297,7 @@
       <p class="painel-ajuda">Qualquer TV, qualquer navegador, sem rede e sem atraso. É o caminho mais seguro quando o evento não pode falhar — e o único que não depende de Wi-Fi bom.</p>
 
       <p class="painel-ajuda">Nos caminhos sem fio, mantenha a janela do navegador visível: minimizada, ele economiza recursos e a troca de fotos fica irregular.</p>
+      </details>
     </section>
 
     <!-- ---- INSTRUÇÕES ---- -->
@@ -310,6 +311,7 @@
         <div class="tecla-par"><dt>Esc</dt><dd>Sai da exibição e volta para cá</dd></div>
         <div class="tecla-par"><dt>← →</dt><dd>Foto anterior e próxima</dd></div>
         <div class="tecla-par"><dt>Espaço</dt><dd>Pausa e retoma a troca automática</dd></div>
+        <div class="tecla-par"><dt>F</dt><dd>Entra e sai da tela cheia</dd></div>
         <div class="tecla-par"><dt>T</dt><dd>Troca quem ocupa a tela toda: as fotos ou o vídeo</dd></div>
         <div class="tecla-par"><dt>V</dt><dd>Mostra e esconde a telinha do canto</dd></div>
         <div class="tecla-par"><dt>R</dt><dd>Religa a trilha do começo</dd></div>
@@ -325,7 +327,7 @@
   </main>
 
   <div class="barra">
-    <p class="barra-dica"><strong>Antes de iniciar</strong>, ligue a transmissão para a TV ainda nesta tela — o painel <strong>Transmitir para a TV</strong> tem o caminho de cada navegador. Depois que a exibição começa, a tela cheia esconde o menu.</p>
+    <p class="barra-dica">Para levar à TV, o painel <strong>Transmitir para a TV</strong> tem o caminho de cada navegador e de cada aparelho. Dá para ligar a transmissão agora ou já com a exibição rodando.</p>
     <button class="botao-forte" id="btn-exibir">Iniciar exibição</button>
   </div>
 
@@ -345,10 +347,11 @@
     <div class="controles-tela" id="controles-tela" hidden>
       <button class="botao-tela" id="btn-trocar">Pôr o vídeo na tela</button>
       <button class="botao-tela" id="btn-video">Mostrar vídeo</button>
+      <button class="botao-tela" id="btn-tela">Tela cheia</button>
     </div>
 
     <div class="atalhos" id="atalhos">
-      <span>Esc sair</span><span>← → foto</span><span>Espaço pausar</span><span>R religar o som</span><span id="atalho-trocar" hidden>T trocar tela</span><span id="atalho-video" hidden>V telinha</span>
+      <span>Esc sair</span><span>← → foto</span><span>Espaço pausar</span><span>R religar o som</span><span id="atalho-tela">F tela cheia</span><span id="atalho-trocar" hidden>T trocar tela</span><span id="atalho-video" hidden>V telinha</span>
     </div>
   </div>
 

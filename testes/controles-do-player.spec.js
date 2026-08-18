@@ -168,6 +168,24 @@ test.describe('os botões', () => {
   const opacidade = (page) => page.evaluate(() =>
     getComputedStyle(document.getElementById('controles-tela')).opacity);
 
+  /* A barra de atalhos é centralizada e os botões saem da esquerda. Se
+     as duas coisas se cruzarem, a barra fica por cima e engole o clique
+     — foi o que aconteceu quando o terceiro botão entrou na fileira. */
+  test('não ficam debaixo da barra de atalhos', async ({ page }) => {
+    await montar(page, { principal: 'fotos' });
+    await exibir(page);
+
+    const botoes = await page.locator('#controles-tela').boundingBox();
+    const atalhos = await page.locator('#atalhos').boundingBox();
+
+    const cruzam = botoes.x < atalhos.x + atalhos.width
+      && atalhos.x < botoes.x + botoes.width
+      && botoes.y < atalhos.y + atalhos.height
+      && atalhos.y < botoes.y + botoes.height;
+
+    expect(cruzam, 'a barra de atalhos cobre os botões e o clique não chega').toBe(false);
+  });
+
   test('cada tecla tem seu par na tela', async ({ page }) => {
     await montar(page, { principal: 'fotos' });
     await exibir(page);
@@ -319,25 +337,6 @@ test.describe('durante a abertura', () => {
     await expect(page.locator('#abertura')).toBeHidden({ timeout: 8000 });
     expect(await quemOcupa(page)).toBe('fotos');
     expect(await temCanto(page)).toBe('nao');
-  });
-
-});
-
-test.describe('sair da tela cheia', () => {
-
-  test('encerra a exibição, porque com o foco preso no player o Esc não chega', async ({ page }) => {
-    await montar(page, { principal: 'video' });
-    await exibir(page);
-
-    await expect.poll(() => page.evaluate(() => !!document.fullscreenElement),
-      { message: 'a exibição nem entrou em tela cheia' }).toBe(true);
-
-    // É o que o navegador faz quando o Esc é apertado com o foco dentro
-    // do player: sai da tela cheia sem avisar a Ciranda por tecla.
-    await page.evaluate(() => document.exitFullscreen());
-
-    await expect(page.locator('#config')).toBeVisible();
-    await expect(page.locator('#exibicao')).toBeHidden();
   });
 
 });
