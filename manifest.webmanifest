@@ -1,7 +1,7 @@
 {
   "name": "Ciranda — fotos e música na TV",
   "short_name": "Ciranda",
-  "description": "Passa suas fotos em tela cheia com música por trás. Transmita a aba para a TV.",
+  "description": "Passa suas fotos em tela cheia com música por trás, para levar à TV por Chromecast, espelhamento ou cabo.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
