@@ -248,7 +248,7 @@ app.css               estilos
 app.js                toda a lógica
 manifest.webmanifest  nome e ícones para instalar como aplicativo
 sw.js                 guarda a casca para abrir offline e permitir instalar
-icones/               16, 48, 128 e 512
+icones/               ícones 16, 48, 128 e 512, e a capa do compartilhamento
 testes/               testes de navegador, não vão para o ar
 ```
 
@@ -274,6 +274,13 @@ em cada pull request a suíte roda sozinha pelo GitHub Actions; quando falha,
 o rastro das falhas fica anexado à execução.
 
 ## Decisões que valem saber
+
+**Por que as metatags de compartilhamento usam URL absoluta.** Quem lê `og:` e
+`twitter:` são os robôs do WhatsApp, do LinkedIn e do Slack, que não executam
+JavaScript nem resolvem caminho relativo. Se o endereço publicado mudar, essas
+URLs mudam junto — erradas, o preview sai sem imagem e ninguém percebe, porque
+a página continua funcionando normalmente.
+
 
 **Por que não é extensão do Chrome.** Era, até descobrir que o Chrome não
 envia cabeçalho de referência para iframes dentro de páginas de extensão. Sem
