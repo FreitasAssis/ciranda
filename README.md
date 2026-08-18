@@ -150,7 +150,8 @@ com a telinha do vídeo, vídeo com a fotinha, só o vídeo.
 
 O escolhido nos ajustes é o ponto de partida. Durante a exibição, `T` e `V`
 mudam isso na hora, e a mudança não fica salva. Cada tecla tem seu par no canto
-inferior esquerdo da tela — botões empilhados que aparecem quando o mouse mexe.
+inferior esquerdo da tela — botões empilhados que aparecem quando o mouse mexe,
+cada um trazendo no rótulo a tecla que faz a mesma coisa.
 
 Serve para pôr o jogo em tela cheia no meio da festa e devolver as fotos
 depois, ou para chamar o player só o tempo de clicar em **Pular anúncio**, que

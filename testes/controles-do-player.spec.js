@@ -186,6 +186,15 @@ test.describe('os botões', () => {
     expect(cruzam, 'a barra de atalhos cobre os botões e o clique não chega').toBe(false);
   });
 
+  test('cada botão ensina a tecla que faz a mesma coisa', async ({ page }) => {
+    await montar(page, { principal: 'fotos' });
+    await exibir(page);
+
+    for (const [botao, tecla] of [['#btn-tela', 'F'], ['#btn-trocar', 'T'], ['#btn-video', 'V']]) {
+      await expect(page.locator(botao), `${botao} não diz a tecla`).toContainText(`(${tecla})`);
+    }
+  });
+
   test('cada tecla tem seu par na tela', async ({ page }) => {
     await montar(page, { principal: 'fotos' });
     await exibir(page);
@@ -199,15 +208,15 @@ test.describe('os botões', () => {
     await exibir(page);
 
     const trocar = page.locator('#btn-trocar');
-    await expect(trocar).toHaveText('Vídeo na tela toda');
+    await expect(trocar).toHaveText('Vídeo na tela toda (T)');
 
     await trocar.click();
     await expect.poll(() => quemOcupa(page)).toBe('video');
-    await expect(trocar).toHaveText('Fotos na tela toda');
+    await expect(trocar).toHaveText('Fotos na tela toda (T)');
 
     await trocar.click();
     await expect.poll(() => quemOcupa(page)).toBe('fotos');
-    await expect(trocar).toHaveText('Vídeo na tela toda');
+    await expect(trocar).toHaveText('Vídeo na tela toda (T)');
   });
 
   test('o botão da telinha nomeia o destino, e some com o conteúdo ao esconder', async ({ page }) => {
@@ -215,18 +224,18 @@ test.describe('os botões', () => {
     await exibir(page);
 
     const botao = page.locator('#btn-video');
-    await expect(botao).toHaveText('Vídeo na telinha');
+    await expect(botao).toHaveText('Vídeo na telinha (V)');
 
     // Escondido, não é preciso nomear o quê: só existe uma telinha.
     await botao.click();
-    await expect(botao).toHaveText('Esconder a telinha');
+    await expect(botao).toHaveText('Esconder a telinha (V)');
 
     // Com o vídeo ocupando a tela, quem vai para a telinha é a foto.
     await page.locator('#btn-trocar').click();
-    await expect(botao).toHaveText('Esconder a telinha');
+    await expect(botao).toHaveText('Esconder a telinha (V)');
 
     await botao.click();
-    await expect(botao).toHaveText('Fotos na telinha');
+    await expect(botao).toHaveText('Fotos na telinha (V)');
   });
 
   /* Era o defeito da primeira versão: com o vídeo sozinho na tela, os

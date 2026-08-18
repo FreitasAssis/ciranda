@@ -748,11 +748,14 @@ function atualizarControles() {
   const palco = $('palco');
   const outro = palco.dataset.principal === 'video' ? 'Fotos' : 'Vídeo';
 
-  $('btn-tela').textContent = document.fullscreenElement ? 'Sair da tela cheia' : 'Tela cheia';
-  $('btn-trocar').textContent = `${outro} na tela toda`;
+  // A tecla vai no rótulo: quem clicar uma vez aprende o atalho e da
+  // segunda em diante não precisa mais chegar perto do computador.
+  $('btn-tela').textContent =
+    document.fullscreenElement ? 'Sair da tela cheia (F)' : 'Tela cheia (F)';
+  $('btn-trocar').textContent = `${outro} na tela toda (T)`;
   $('btn-video').textContent = palco.dataset.secundario === 'sim'
-    ? 'Esconder a telinha'
-    : `${outro} na telinha`;
+    ? 'Esconder a telinha (V)'
+    : `${outro} na telinha (V)`;
 }
 
 function despertarControles() {

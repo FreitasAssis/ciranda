@@ -57,15 +57,15 @@ test('o botão faz o mesmo e diz o que faz', async ({ page }) => {
 
   const botao = page.locator('#btn-tela');
   await expect(botao).toBeVisible();
-  await expect(botao).toHaveText('Tela cheia');
+  await expect(botao).toHaveText('Tela cheia (F)');
 
   await botao.click();
   await expect.poll(() => emTelaCheia(page)).toBe(true);
-  await expect(botao).toHaveText('Sair da tela cheia');
+  await expect(botao).toHaveText('Sair da tela cheia (F)');
 
   await botao.click();
   await expect.poll(() => emTelaCheia(page)).toBe(false);
-  await expect(botao).toHaveText('Tela cheia');
+  await expect(botao).toHaveText('Tela cheia (F)');
 });
 
 test.describe('sair da tela cheia', () => {
