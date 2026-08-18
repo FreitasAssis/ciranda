@@ -163,9 +163,36 @@ test.describe('as duas teclas', () => {
 
 });
 
-test.describe('o botão', () => {
+test.describe('os botões', () => {
 
-  test('nomeia o que vai mostrar, e isso muda com quem ocupa a tela', async ({ page }) => {
+  const opacidade = (page) => page.evaluate(() =>
+    getComputedStyle(document.getElementById('controles-tela')).opacity);
+
+  test('cada tecla tem seu par na tela', async ({ page }) => {
+    await montar(page, { principal: 'fotos' });
+    await exibir(page);
+
+    await expect(page.locator('#btn-trocar')).toBeVisible();
+    await expect(page.locator('#btn-video')).toBeVisible();
+  });
+
+  test('o botão de trocar nomeia para onde vai, e troca de fato', async ({ page }) => {
+    await montar(page, { principal: 'fotos' });
+    await exibir(page);
+
+    const trocar = page.locator('#btn-trocar');
+    await expect(trocar).toHaveText('Pôr o vídeo na tela');
+
+    await trocar.click();
+    await expect.poll(() => quemOcupa(page)).toBe('video');
+    await expect(trocar).toHaveText('Pôr as fotos na tela');
+
+    await trocar.click();
+    await expect.poll(() => quemOcupa(page)).toBe('fotos');
+    await expect(trocar).toHaveText('Pôr o vídeo na tela');
+  });
+
+  test('o botão do canto nomeia o que vai mostrar, e isso segue quem ocupa a tela', async ({ page }) => {
     await montar(page, { principal: 'fotos', secundario: false });
     await exibir(page);
 
@@ -176,35 +203,39 @@ test.describe('o botão', () => {
     await expect(botao).toHaveText('Esconder vídeo');
 
     // Com o vídeo ocupando a tela, quem vai para o canto é a foto.
-    await page.keyboard.press('t');
+    await page.locator('#btn-trocar').click();
     await expect(botao).toHaveText('Esconder fotos');
 
     await botao.click();
     await expect(botao).toHaveText('Mostrar fotos');
   });
 
-  test('com o vídeo ocupando a tela, o botão não some sozinho', async ({ page }) => {
+  test('com o vídeo ocupando a tela, os botões não somem sozinhos', async ({ page }) => {
     await montar(page, { principal: 'video' });
     await exibir(page);
 
-    const opacidade = () => page.evaluate(() =>
-      getComputedStyle(document.getElementById('btn-video')).opacity);
-
     await page.waitForTimeout(5000);
-    expect(await opacidade(),
+    expect(await opacidade(page),
       'sumiu a única superfície clicável fora do player: o teclado fica preso lá').toBe('1');
   });
 
-  test('com as fotos ocupando a tela, o botão some e volta com o mouse', async ({ page }) => {
+  test('e o de trocar continua clicável, que é como se sai desse modo sem teclado', async ({ page }) => {
+    await montar(page, { principal: 'video' });
+    await exibir(page);
+
+    await page.waitForTimeout(5000);
+    await page.locator('#btn-trocar').click();
+
+    await expect.poll(() => quemOcupa(page)).toBe('fotos');
+  });
+
+  test('com as fotos ocupando a tela, os botões somem e voltam com o mouse', async ({ page }) => {
     await montar(page, { principal: 'fotos' });
     await exibir(page);
 
-    const opacidade = () => page.evaluate(() =>
-      getComputedStyle(document.getElementById('btn-video')).opacity);
-
-    await expect.poll(opacidade, { timeout: 12000 }).toBe('0');
+    await expect.poll(() => opacidade(page), { timeout: 12000 }).toBe('0');
     await page.mouse.move(400, 300);
-    await expect.poll(opacidade).toBe('1');
+    await expect.poll(() => opacidade(page)).toBe('1');
   });
 
 });
@@ -216,6 +247,7 @@ test.describe('quando não há player', () => {
     await exibir(page);
 
     await expect(page.locator('#btn-video')).toBeHidden();
+    await expect(page.locator('#btn-trocar')).toBeHidden();
     await expect(page.locator('#atalho-video')).toBeHidden();
     await expect(page.locator('#atalho-trocar')).toBeHidden();
   });

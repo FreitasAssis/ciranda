@@ -711,8 +711,8 @@ function trocarPrincipal() {
 
   const palco = $('palco');
   palco.dataset.principal = palco.dataset.principal === 'video' ? 'fotos' : 'video';
-  atualizarBotaoDoVideo();
-  despertarBotaoDoVideo();
+  atualizarControles();
+  despertarControles();
 }
 
 function alternarVideo() {
@@ -720,34 +720,39 @@ function alternarVideo() {
 
   const palco = $('palco');
   palco.dataset.secundario = palco.dataset.secundario === 'sim' ? 'nao' : 'sim';
-  atualizarBotaoDoVideo();
-  despertarBotaoDoVideo();
+  atualizarControles();
+  despertarControles();
 }
 
 // Sem player não há duas coisas para arranjar na tela, e mexer nisso só
 // levaria a uma tela preta ou a uma caixa vazia na TV.
 const podeMexerNaTela = () => exibindo && temPlayer && !naAbertura;
 
-// O botão diz o que vai fazer, não o estado em que está. Quem vai para o
-// canto muda conforme quem está ocupando a tela.
-function atualizarBotaoDoVideo() {
+// Cada botão diz o que vai fazer, não o estado em que está. Quem vai
+// para o canto muda conforme quem está ocupando a tela.
+function atualizarControles() {
   const palco = $('palco');
-  const noCanto = palco.dataset.principal === 'video' ? 'fotos' : 'vídeo';
+  const noVideo = palco.dataset.principal === 'video';
+
+  $('btn-trocar').textContent = noVideo ? 'Pôr as fotos na tela' : 'Pôr o vídeo na tela';
+
+  const noCanto = noVideo ? 'fotos' : 'vídeo';
   const acao = palco.dataset.secundario === 'sim' ? 'Esconder' : 'Mostrar';
   $('btn-video').textContent = `${acao} ${noCanto}`;
 }
 
-function despertarBotaoDoVideo() {
-  const botao = $('btn-video');
-  botao.classList.remove('some');
+function despertarControles() {
+  const controles = $('controles-tela');
+  controles.classList.remove('some');
   clearTimeout(relogioBotaoVideo);
 
-  // Com o vídeo ocupando a tela, o botão é a única superfície clicável
-  // fora do player. Se ele sumisse, um clique no vídeo prenderia o foco
-  // do teclado no iframe sem deixar por onde recuperá-lo.
+  // Com o vídeo ocupando a tela, estes botões são a única superfície
+  // clicável fora do player. Se sumissem, um clique no vídeo prenderia o
+  // foco do teclado no iframe sem deixar por onde recuperá-lo — e é o
+  // botão de trocar que tira você desse modo sem o teclado.
   if ($('palco').dataset.principal === 'video') return;
 
-  relogioBotaoVideo = setTimeout(() => botao.classList.add('some'), 3000);
+  relogioBotaoVideo = setTimeout(() => controles.classList.add('some'), 3000);
 }
 
 async function urlDe(id) {
@@ -834,12 +839,12 @@ async function iniciarExibicao() {
     $('palco').dataset.principal = 'fotos';
     $('palco').dataset.secundario = 'nao';
   }
-  $('btn-video').hidden = !temPlayer;
+  $('controles-tela').hidden = !temPlayer;
   $('atalho-video').hidden = !temPlayer;
   $('atalho-trocar').hidden = !temPlayer;
   if (temPlayer) {
-    atualizarBotaoDoVideo();
-    despertarBotaoDoVideo();
+    atualizarControles();
+    despertarControles();
   }
 
   limparCache();
@@ -1008,8 +1013,8 @@ function encerrarExibicao() {
   $('abertura').hidden = true;
 
   temPlayer = false;
-  $('btn-video').hidden = true;
-  $('btn-video').classList.remove('some');
+  $('controles-tela').hidden = true;
+  $('controles-tela').classList.remove('some');
   $('atalho-video').hidden = true;
   $('atalho-trocar').hidden = true;
   aplicarDisposicao();
@@ -1277,6 +1282,7 @@ function ligarInterface() {
 
   $('btn-exibir').addEventListener('click', iniciarExibicao);
 
+  $('btn-trocar').addEventListener('click', trocarPrincipal);
   $('btn-video').addEventListener('click', alternarVideo);
 
   // Com o vídeo ocupando a tela, um clique no player prende o foco do
@@ -1288,7 +1294,7 @@ function ligarInterface() {
   });
 
   $('exibicao').addEventListener('mousemove', () => {
-    if (exibindo && temPlayer) despertarBotaoDoVideo();
+    if (exibindo && temPlayer) despertarControles();
   });
 
   // Clicar dentro do player entrega o foco ao iframe, e a partir daí o

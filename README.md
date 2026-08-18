@@ -113,11 +113,18 @@ A mesma lista fica na tela de ajustes, no painel **Durante a exibição**.
 outro aparece num canto. Daí saem as quatro combinações — só as fotos, fotos
 com a telinha do vídeo, vídeo com a fotinha, só o vídeo.
 
-O escolhido nos ajustes é o ponto de partida. Durante a exibição, `T` e `V` —
-ou o botão no canto inferior esquerdo — mudam isso na hora, e a mudança não
-fica salva. Serve para pôr o jogo em tela cheia no meio da festa e devolver as
-fotos depois, ou para chamar o player só o tempo de clicar em **Pular
-anúncio**, que é um botão do YouTube e só o mouse alcança.
+O escolhido nos ajustes é o ponto de partida. Durante a exibição, `T` e `V`
+mudam isso na hora, e a mudança não fica salva. Cada uma das duas teclas tem
+seu par no canto inferior esquerdo da tela — dois botões que aparecem quando o
+mouse mexe.
+
+Serve para pôr o jogo em tela cheia no meio da festa e devolver as fotos
+depois, ou para chamar o player só o tempo de clicar em **Pular anúncio**, que
+é um botão do YouTube e só o mouse alcança.
+
+Com o vídeo ocupando a tela os dois botões param de sumir. É de propósito: ali
+o player cobre tudo, e se um clique nele prender o foco do teclado, são eles a
+única saída sem encerrar a exibição.
 
 Com a trilha vindo de arquivos de música não há o que trocar: `T` e `V` não
 fazem nada e o botão não aparece.
