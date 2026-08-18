@@ -90,8 +90,15 @@ test.describe('sair da tela cheia', () => {
     await expect.poll(() => emTelaCheia(page)).toBe(true);
 
     // Um clique no player do YouTube prende o foco no iframe.
-    await page.evaluate(() => document.querySelector('#som iframe').focus());
-    expect(await page.evaluate(() => document.activeElement.tagName)).toBe('IFRAME');
+    // Sincroniza em vez de correr: insiste até o foco pousar no iframe,
+    // e falha alto se ele nunca pousar — o teste não pode passar por não
+    // ter conseguido prender o foco.
+    await expect(page.locator('#som iframe')).toBeAttached();
+    await expect.poll(() => page.evaluate(() => {
+      const quadro = document.querySelector('#som iframe');
+      if (document.activeElement !== quadro) quadro.focus();
+      return document.activeElement.tagName;
+    }), { message: 'não deu para prender o foco no player' }).toBe('IFRAME');
 
     await page.evaluate(() => document.exitFullscreen());
 

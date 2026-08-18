@@ -758,17 +758,15 @@ function atualizarControles() {
     : `${outro} na telinha (V)`;
 }
 
+/* Saem da frente em qualquer modo. Já foram fixos com o vídeo ocupando a
+   tela, quando eram a única saída caso um clique no player prendesse o
+   foco do teclado no iframe. Hoje há duas outras: sair da tela cheia e
+   tirar o mouse do player devolvem o foco, e as teclas voltam a
+   responder mesmo com os botões apagados. */
 function despertarControles() {
   const controles = $('controles-tela');
   controles.classList.remove('some');
   clearTimeout(relogioBotaoVideo);
-
-  // Com o vídeo ocupando a tela, estes botões são a única superfície
-  // clicável fora do player. Se sumissem, um clique no vídeo prenderia o
-  // foco do teclado no iframe sem deixar por onde recuperá-lo — e é o
-  // botão de trocar que tira você desse modo sem o teclado.
-  if ($('palco').dataset.principal === 'video') return;
-
   relogioBotaoVideo = setTimeout(() => controles.classList.add('some'), 3000);
 }
 

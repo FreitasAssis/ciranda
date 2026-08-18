@@ -729,20 +729,27 @@ button, input { font-family: inherit; font-size: inherit; }
    uma fileira horizontal de três botões cruzava com ela — a barra ficava
    por cima e engolia o clique. Em coluna, o comprimento do rótulo deixa
    de ser um limite. */
+/* Empilhados logo acima da telinha, encostados na mesma margem direita.
+   O rodapé inteiro é do player quando o vídeo ocupa a tela — barra de
+   progresso, tempo e play moram lá —, e o topo tem o título de um lado e
+   volume, legendas e ajustes do outro. Esta é a faixa que sobra livre.
+   Vale nos dois modos: assim o botão não foge de baixo do dedo de quem
+   acabou de apertar o de trocar. */
 .controles-tela {
   position: absolute;
-  left: 24px;
-  bottom: 24px;
+  right: 2.4vw;
+  bottom: calc(2.4vw + (26vw * 9 / 16) + 12px);
   z-index: 5;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 8px;
   opacity: 1;
   transition: opacity 600ms ease;
 }
 
 .controles-tela[hidden] { display: none; }
+
 
 /* Apagados, também não podem receber clique: senão viram alvos
    invisíveis no canto da tela. */

@@ -149,17 +149,26 @@ outro aparece num canto. Daí saem as quatro combinações — só as fotos, fot
 com a telinha do vídeo, vídeo com a fotinha, só o vídeo.
 
 O escolhido nos ajustes é o ponto de partida. Durante a exibição, `T` e `V`
-mudam isso na hora, e a mudança não fica salva. Cada tecla tem seu par no canto
-inferior esquerdo da tela — botões empilhados que aparecem quando o mouse mexe,
-cada um trazendo no rótulo a tecla que faz a mesma coisa.
+mudam isso na hora, e a mudança não fica salva. Cada tecla tem seu par na tela
+— botões empilhados logo acima da telinha, à direita, que aparecem quando o
+mouse mexe e somem sozinhos. Cada um traz no rótulo a tecla que faz a mesma
+coisa, então uma olhada basta para nunca mais precisar do botão.
+
+Ficam ali, e não no rodapé, porque com o vídeo ocupando a tela o rodapé inteiro
+pertence ao player: barra de progresso, tempo e play. O topo também é dele, com
+o título de um lado e volume, legendas e ajustes do outro.
 
 Serve para pôr o jogo em tela cheia no meio da festa e devolver as fotos
 depois, ou para chamar o player só o tempo de clicar em **Pular anúncio**, que
 é um botão do YouTube e só o mouse alcança.
 
-Com o vídeo ocupando a tela os dois botões param de sumir. É de propósito: ali
-o player cobre tudo, e se um clique nele prender o foco do teclado, são eles a
-única saída sem encerrar a exibição.
+Uma limitação a conhecer: com o vídeo ocupando a tela e a telinha escondida, os
+botões não voltam pelo mouse depois de sumirem. O player cobre tudo e engole o
+movimento antes que a Ciranda o veja. As teclas continuam funcionando, e com a
+telinha à mostra o mouse por cima dela traz os botões de volta.
+
+Se um clique no player prender o foco do teclado, duas coisas o devolvem: sair
+da tela cheia e afastar o mouse do player.
 
 Com a trilha vindo de arquivos de música não há o que trocar: `T` e `V` não
 fazem nada e o botão não aparece.

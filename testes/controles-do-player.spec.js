@@ -186,6 +186,52 @@ test.describe('os botões', () => {
     expect(cruzam, 'a barra de atalhos cobre os botões e o clique não chega').toBe(false);
   });
 
+  /* Com o vídeo ocupando a tela, o rodapé pertence ao player: barra de
+     progresso, tempo e play ficam lá, e o topo tem o título à esquerda e
+     volume, legendas e ajustes à direita. Os botões da Ciranda em cima
+     disso disputam clique com os do YouTube. */
+  test('saem de cima dos controles do player quando o vídeo ocupa a tela', async ({ page }) => {
+    await montar(page, { principal: 'video' });
+    await exibir(page);
+
+    const palco = await page.locator('#palco').boundingBox();
+    const botoes = await page.locator('#controles-tela').boundingBox();
+
+    const rodapeDoPlayer = palco.y + palco.height * 0.85;
+    const topoDoPlayer = palco.y + palco.height * 0.15;
+
+    expect(botoes.y + botoes.height, 'os botões invadem a barra do player')
+      .toBeLessThanOrEqual(rodapeDoPlayer);
+    expect(botoes.y, 'os botões invadem o título e os ajustes do player')
+      .toBeGreaterThanOrEqual(topoDoPlayer);
+  });
+
+  test('ficam acima da telinha, sem encostar nela', async ({ page }) => {
+    await montar(page, { principal: 'video', secundario: true });
+    await exibir(page);
+
+    const botoes = await page.locator('#controles-tela').boundingBox();
+    const telinha = await page.locator('.fotos').boundingBox();
+
+    expect(botoes.y + botoes.height, 'os botões caem em cima da telinha')
+      .toBeLessThanOrEqual(telinha.y);
+    expect(botoes.x + botoes.width, 'não estão alinhados com a telinha')
+      .toBeCloseTo(telinha.x + telinha.width, 0);
+  });
+
+  test('não pulam de lugar quando o principal troca', async ({ page }) => {
+    await montar(page, { principal: 'fotos' });
+    await exibir(page);
+    const comFotos = await page.locator('#controles-tela').boundingBox();
+
+    await page.keyboard.press('t');
+    await expect.poll(() => quemOcupa(page)).toBe('video');
+    const comVideo = await page.locator('#controles-tela').boundingBox();
+
+    expect(comVideo.y, 'o botão fugiu de baixo do dedo de quem ia clicar de novo')
+      .toBeCloseTo(comFotos.y, 0);
+  });
+
   test('cada botão ensina a tecla que faz a mesma coisa', async ({ page }) => {
     await montar(page, { principal: 'fotos' });
     await exibir(page);
@@ -262,23 +308,49 @@ test.describe('os botões', () => {
     }
   });
 
-  test('com o vídeo ocupando a tela, os botões não somem sozinhos', async ({ page }) => {
+  /* Já foram fixos com o vídeo ocupando a tela, porque eram a única saída
+     se um clique no player prendesse o foco do teclado no iframe. Hoje
+     há duas outras saídas — sair da tela cheia e tirar o mouse do player
+     devolvem o foco —, então eles podem sair da frente como em qualquer
+     outro modo. As duas saídas estão testadas logo abaixo. */
+  test('somem sozinhos também com o vídeo ocupando a tela', async ({ page }) => {
     await montar(page, { principal: 'video' });
     await exibir(page);
 
-    await page.waitForTimeout(5000);
-    expect(await opacidade(page),
-      'sumiu a única superfície clicável fora do player: o teclado fica preso lá').toBe('1');
+    await expect.poll(() => opacidade(page), { timeout: 12000 })
+      .toBe('0');
   });
 
-  test('e o de trocar continua clicável, que é como se sai desse modo sem teclado', async ({ page }) => {
+  test('tirar o mouse do player devolve o teclado, mesmo com ele ocupando tudo', async ({ page }) => {
     await montar(page, { principal: 'video' });
     await exibir(page);
 
-    await page.waitForTimeout(5000);
-    await page.locator('#btn-trocar').click();
+    // Sincroniza em vez de correr: insiste até o foco pousar no iframe,
+    // e falha alto se ele nunca pousar — o teste não pode passar por não
+    // ter conseguido prender o foco.
+    await expect(page.locator('#som iframe')).toBeAttached();
+    await expect.poll(() => page.evaluate(() => {
+      const quadro = document.querySelector('#som iframe');
+      if (document.activeElement !== quadro) quadro.focus();
+      return document.activeElement.tagName;
+    }), { message: 'não deu para prender o foco no player' }).toBe('IFRAME');
 
-    await expect.poll(() => quemOcupa(page)).toBe('fotos');
+    await page.locator('#som').dispatchEvent('mouseleave');
+
+    await expect.poll(() => page.evaluate(() => document.activeElement.id),
+      { message: 'sem esta saída, o teclado fica preso no player' }).toBe('palco');
+  });
+
+  test('e com o teclado de volta, as teclas ainda arranjam a tela', async ({ page }) => {
+    await montar(page, { principal: 'video' });
+    await exibir(page);
+
+    // Espera os botões sumirem: daí em diante só o teclado responde.
+    await expect.poll(() => opacidade(page), { timeout: 12000 }).toBe('0');
+
+    await page.keyboard.press('t');
+    await expect.poll(() => quemOcupa(page),
+      'sem botão e sem tecla não haveria como sair do modo vídeo').toBe('fotos');
   });
 
   test('com as fotos ocupando a tela, os botões somem e voltam com o mouse', async ({ page }) => {
