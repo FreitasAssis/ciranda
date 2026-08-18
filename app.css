@@ -95,6 +95,27 @@ button, input { font-family: inherit; font-size: inherit; }
   color: rgba(242, 240, 235, .70);
 }
 
+/* --- subtítulo dentro de um painel --- */
+
+.sub-titulo {
+  margin: 26px 0 0;
+  font-family: var(--display);
+  font-size: 14px;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--texto);
+}
+
+.sub-titulo + .painel-ajuda { margin-top: 8px; }
+
+/* O aviso de ordem: é a única instrução aqui que, se ignorada, deixa a
+   pessoa sem caminho de volta a não ser encerrando a exibição. */
+.alerta-ordem {
+  padding-left: 12px;
+  border-left: 3px solid var(--ambar-2);
+  color: var(--texto);
+}
+
 /* --- lista de teclas da tela de ajustes --- */
 
 .teclas {
@@ -118,6 +139,12 @@ button, input { font-family: inherit; font-size: inherit; }
   font-size: 12px;
   text-align: center;
   color: var(--creme);
+}
+
+/* Nome de navegador não cabe na caixa estreita de uma tecla. */
+.teclas dt.largo {
+  flex-basis: 186px;
+  padding-inline: 10px;
 }
 
 .teclas dd {

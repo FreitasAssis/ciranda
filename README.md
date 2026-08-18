@@ -1,8 +1,8 @@
 # Ciranda
 
 Página web que passa suas fotos em tela cheia com música tocando por trás. A
-tela vai para a TV como uma aba só — som e imagem juntos, sem precisar de
-aparelho nenhum além do Chromecast que você já tem.
+tela vai para a TV com som e imagem juntos — por Chromecast, pelo espelhamento
+do próprio sistema, ou por um cabo HDMI.
 
 Serve para o cardápio de um restaurante, para as fotos de um aniversário, para
 o portfólio na parede do estúdio, para os imóveis na vitrine. É a mesma
@@ -19,8 +19,9 @@ Feito por [Luiz Freitas](https://luizfreitas.com.br/). Licença MIT.
 
 ## Abrir e instalar
 
-Abra o endereço da Ciranda no Chrome. Não precisa de conta nem de instalação
-para usar.
+Abra o endereço da Ciranda no navegador. Não precisa de conta nem de
+instalação para usar. O Chrome é o mais completo, por ser o que transmite
+direto para Chromecast; nos outros caminhos qualquer navegador serve.
 
 Para ter um ícone e não depender de favorito, clique no botão de instalar que
 aparece na barra de endereço, ou vá em **⋮ → Transmitir, salvar e compartilhar
@@ -80,17 +81,52 @@ nenhum.
 
 ## Transmitir para a TV
 
-1. Clique em **Iniciar exibição**. A tela entra em tela cheia e a música começa.
-2. No Chrome: menu **⋮ → Transmitir**.
-3. Em **Origens**, escolha **Transmitir aba**.
-4. Escolha o Chromecast.
+Há três caminhos, e qual serve depende da TV, não da Ciranda. A mesma
+explicação fica na tela de ajustes, no painel **Transmitir para a TV**. Em
+todos: se aparecer uma opção de enviar o áudio junto, deixe marcada — é ela
+que leva a música.
 
-O áudio da aba vai junto automaticamente. Se aparecer uma opção de enviar o
-som, deixe marcada.
+### 1. Pelo navegador, para Chromecast
 
-Enquanto estiver transmitindo, deixe a janela do Chrome visível na tela do
-computador. Minimizada, o Chrome economiza recursos e a troca de fotos pode
-ficar irregular.
+Serve para o Chromecast de pendurar na TV e para as TVs com **Chromecast
+integrado**: Sony, Philips, TCL, Hisense, e as LG de 2024 em diante. Vai só o
+conteúdo da aba — a barra do navegador e o resto da área de trabalho não
+aparecem na TV.
+
+| Navegador | Caminho |
+|---|---|
+| Chrome | **⋮ → Transmitir, salvar e compartilhar → Transmitir**, e em **Origens** escolha **Transmitir aba** |
+| Edge | **⋯ → Mais ferramentas → Transmitir mídia no dispositivo** (varia com a versão) |
+| Brave, Opera, Vivaldi | Parentes do Chrome, mesmo caminho com outro nome de menu |
+| Firefox | Não fala Google Cast — use outro navegador, ou os caminhos 2 e 3 |
+
+**Este caminho precisa ser ligado antes de iniciar a exibição.** Não é
+preferência: iniciar entra em tela cheia, e em tela cheia o navegador esconde a
+própria barra de ferramentas — o menu de transmitir some junto. Quem inicia
+primeiro fica sem por onde transmitir e precisa apertar `Esc` para voltar.
+
+### 2. Pelo sistema, para as outras TVs
+
+Samsung, LG mais antigas, Roku, Fire TV e Apple TV **não respondem** ao menu do
+navegador. Nesses casos quem espelha é o sistema — o que funciona com qualquer
+navegador, inclusive o Firefox, e a qualquer momento, porque não passa por
+menu que a tela cheia esconda.
+
+| Sistema | Caminho |
+|---|---|
+| Windows | **Win + K** e escolha a TV. É o Miracast, que Samsung, LG e Sony aceitam há bastante tempo |
+| Mac | Central de Controle → **Espelhamento de Tela**. É o AirPlay, da Apple TV e das Samsung, LG, Sony e Vizio de 2019 em diante |
+
+Aqui vai a **tela inteira**, não só a aba: uma notificação que chegue aparece
+na TV no meio da festa. Vale ligar o "não perturbe" antes.
+
+### 3. Cabo HDMI
+
+Qualquer TV, qualquer navegador, sem rede e sem atraso. É o caminho mais seguro
+quando o evento não pode falhar, e o único que não depende de Wi-Fi bom.
+
+Nos caminhos sem fio, mantenha a janela do navegador visível: minimizada, ele
+economiza recursos e a troca de fotos fica irregular.
 
 Transmitir aba é recurso de desktop. No celular a Ciranda serve para montar,
 não para exibir na TV.
