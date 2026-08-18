@@ -728,17 +728,18 @@ function alternarVideo() {
 // levaria a uma tela preta ou a uma caixa vazia na TV.
 const podeMexerNaTela = () => exibindo && temPlayer && !naAbertura;
 
-// Cada botão diz o que vai fazer, não o estado em que está. Quem vai
-// para o canto muda conforme quem está ocupando a tela.
+/* Cada botão nomeia o destino, não só o conteúdo. Dizer "mostrar fotos"
+   nos dois seria ambíguo com o vídeo sozinho na tela: as duas ações
+   fazem a foto aparecer, e o que muda é onde ela vai parar.
+   Para esconder não é preciso nomear o quê — só existe uma telinha. */
 function atualizarControles() {
   const palco = $('palco');
-  const noVideo = palco.dataset.principal === 'video';
+  const outro = palco.dataset.principal === 'video' ? 'Fotos' : 'Vídeo';
 
-  $('btn-trocar').textContent = noVideo ? 'Pôr as fotos na tela' : 'Pôr o vídeo na tela';
-
-  const noCanto = noVideo ? 'fotos' : 'vídeo';
-  const acao = palco.dataset.secundario === 'sim' ? 'Esconder' : 'Mostrar';
-  $('btn-video').textContent = `${acao} ${noCanto}`;
+  $('btn-trocar').textContent = `${outro} na tela toda`;
+  $('btn-video').textContent = palco.dataset.secundario === 'sim'
+    ? 'Esconder a telinha'
+    : `${outro} na telinha`;
 }
 
 function despertarControles() {

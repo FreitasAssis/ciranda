@@ -176,38 +176,63 @@ test.describe('os botões', () => {
     await expect(page.locator('#btn-video')).toBeVisible();
   });
 
-  test('o botão de trocar nomeia para onde vai, e troca de fato', async ({ page }) => {
+  test('o botão de trocar nomeia o destino, e troca de fato', async ({ page }) => {
     await montar(page, { principal: 'fotos' });
     await exibir(page);
 
     const trocar = page.locator('#btn-trocar');
-    await expect(trocar).toHaveText('Pôr o vídeo na tela');
+    await expect(trocar).toHaveText('Vídeo na tela toda');
 
     await trocar.click();
     await expect.poll(() => quemOcupa(page)).toBe('video');
-    await expect(trocar).toHaveText('Pôr as fotos na tela');
+    await expect(trocar).toHaveText('Fotos na tela toda');
 
     await trocar.click();
     await expect.poll(() => quemOcupa(page)).toBe('fotos');
-    await expect(trocar).toHaveText('Pôr o vídeo na tela');
+    await expect(trocar).toHaveText('Vídeo na tela toda');
   });
 
-  test('o botão do canto nomeia o que vai mostrar, e isso segue quem ocupa a tela', async ({ page }) => {
+  test('o botão da telinha nomeia o destino, e some com o conteúdo ao esconder', async ({ page }) => {
     await montar(page, { principal: 'fotos', secundario: false });
     await exibir(page);
 
     const botao = page.locator('#btn-video');
-    await expect(botao).toHaveText('Mostrar vídeo');
+    await expect(botao).toHaveText('Vídeo na telinha');
 
+    // Escondido, não é preciso nomear o quê: só existe uma telinha.
     await botao.click();
-    await expect(botao).toHaveText('Esconder vídeo');
+    await expect(botao).toHaveText('Esconder a telinha');
 
-    // Com o vídeo ocupando a tela, quem vai para o canto é a foto.
+    // Com o vídeo ocupando a tela, quem vai para a telinha é a foto.
     await page.locator('#btn-trocar').click();
-    await expect(botao).toHaveText('Esconder fotos');
+    await expect(botao).toHaveText('Esconder a telinha');
 
     await botao.click();
-    await expect(botao).toHaveText('Mostrar fotos');
+    await expect(botao).toHaveText('Fotos na telinha');
+  });
+
+  /* Era o defeito da primeira versão: com o vídeo sozinho na tela, os
+     dois botões diziam "fotos" e nenhum dizia para onde elas iriam. */
+  test('em nenhum estado os dois botões dizem a mesma coisa', async ({ page }) => {
+    await montar(page, { principal: 'fotos', secundario: false });
+    await exibir(page);
+
+    const textos = () => page.evaluate(() => ({
+      trocar: document.getElementById('btn-trocar').textContent,
+      canto: document.getElementById('btn-video').textContent
+    }));
+
+    for (const passos of [[], ['v'], ['t'], ['v']]) {
+      for (const tecla of passos) await page.keyboard.press(tecla);
+      await page.waitForTimeout(120);
+
+      const { trocar, canto } = await textos();
+      const estado = `${await quemOcupa(page)}/${await temCanto(page)}`;
+
+      expect(trocar, `rótulos iguais em ${estado}`).not.toBe(canto);
+      expect(trocar, `o botão de trocar não diz o destino em ${estado}`).toContain('tela toda');
+      expect(canto, `o botão da telinha não diz o destino em ${estado}`).toContain('telinha');
+    }
   });
 
   test('com o vídeo ocupando a tela, os botões não somem sozinhos', async ({ page }) => {

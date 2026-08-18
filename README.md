@@ -103,8 +103,8 @@ não para exibir na TV.
 | `→` ou `Espaço` | Durante a abertura, pula direto para as fotos |
 | `←` `→` | Foto anterior / próxima |
 | `Espaço` | Pausa e retoma a troca automática |
-| `T` | Troca quem ocupa a tela: as fotos ou o vídeo |
-| `V` | Mostra e esconde o que fica no canto |
+| `T` | Troca quem ocupa a tela toda: as fotos ou o vídeo |
+| `V` | Mostra e esconde a telinha do canto |
 | `R` | Religa a trilha do começo |
 
 A mesma lista fica na tela de ajustes, no painel **Durante a exibição**.
