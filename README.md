@@ -103,22 +103,29 @@ não para exibir na TV.
 | `→` ou `Espaço` | Durante a abertura, pula direto para as fotos |
 | `←` `→` | Foto anterior / próxima |
 | `Espaço` | Pausa e retoma a troca automática |
-| `V` | Chama e esconde a telinha do vídeo |
+| `T` | Troca quem ocupa a tela: as fotos ou o vídeo |
+| `V` | Mostra e esconde o que fica no canto |
 | `R` | Religa a trilha do começo |
 
-**A telinha do vídeo.** Com a trilha vindo do YouTube, `V` — ou o botão no
-canto inferior esquerdo, que aparece quando o mouse mexe — chama e esconde o
-player a qualquer momento. A disposição escolhida nos ajustes é só o ponto de
-partida, e a alternância não fica salva.
+A mesma lista fica na tela de ajustes, no painel **Durante a exibição**.
 
-Serve para pausar a música sem sair da exibição e, principalmente, para clicar
-em **Pular anúncio** quando ele aparece. Esse botão é do YouTube e só o mouse
-alcança, então a telinha precisa estar à vista na hora. Escondida de novo, as
-fotos voltam a ter a tela inteira.
+**Arranjar a tela.** São duas decisões independentes: quem ocupa a tela e se o
+outro aparece num canto. Daí saem as quatro combinações — só as fotos, fotos
+com a telinha do vídeo, vídeo com a fotinha, só o vídeo.
 
-Depois de mexer no player, afaste o mouse da telinha: enquanto o cursor está
-em cima dela o teclado pertence ao YouTube, e é ao sair que `Esc` e as setas
-voltam a ser da Ciranda.
+O escolhido nos ajustes é o ponto de partida. Durante a exibição, `T` e `V` —
+ou o botão no canto inferior esquerdo — mudam isso na hora, e a mudança não
+fica salva. Serve para pôr o jogo em tela cheia no meio da festa e devolver as
+fotos depois, ou para chamar o player só o tempo de clicar em **Pular
+anúncio**, que é um botão do YouTube e só o mouse alcança.
+
+Com a trilha vindo de arquivos de música não há o que trocar: `T` e `V` não
+fazem nada e o botão não aparece.
+
+**Depois de mexer no player, afaste o mouse dele.** Enquanto o cursor está em
+cima, o teclado pertence ao YouTube, e é ao sair que `Esc` e as setas voltam a
+ser da Ciranda. Sair da tela cheia por qualquer caminho também encerra a
+exibição.
 
 ## Se algo não funcionar
 

@@ -95,6 +95,38 @@ button, input { font-family: inherit; font-size: inherit; }
   color: rgba(242, 240, 235, .70);
 }
 
+/* --- lista de teclas da tela de ajustes --- */
+
+.teclas {
+  margin: 16px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.tecla-par {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.teclas dt {
+  flex: 0 0 78px;
+  padding: 3px 0;
+  border-radius: 3px;
+  background: var(--grafite-1);
+  font-family: var(--conta);
+  font-size: 12px;
+  text-align: center;
+  color: var(--creme);
+}
+
+.teclas dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--texto-2);
+}
+
 /* --- assinatura --- */
 
 .credito {
@@ -580,17 +612,48 @@ button, input { font-family: inherit; font-size: inherit; }
 
 .foto.visivel { opacity: 1; }
 
-/* No modo "só o cardápio" o player ocupa a tela inteira por trás,
-   então a camada de fotos precisa ser opaca — e repete o azulejo
-   para a moldura ao redor da foto não virar um retângulo morto. */
-/* No modo "só as fotos" o player ocupa a tela inteira por trás, então
-   esta camada precisa ser opaca. Cinza neutro de propósito: é moldura
-   de galeria, não deve competir com a cor das fotos. */
-.palco[data-layout="so-foto"] .fotos { background: var(--grafite-0); }
+/* Quem ocupa a tela fica no fundo ocupando tudo; quem vai para o canto
+   sobe para a frente numa caixinha. São duas dimensões independentes:
+   T troca o principal, V mostra e esconde o secundário. */
 
-.palco[data-layout="canto"] .fotos { background: none; }
+/* --- as fotos ocupando a tela --- */
 
-.palco[data-layout="canto"] .som {
+/* A camada de fotos precisa ser opaca: o player está atrás dela
+   ocupando tudo. Cinza neutro de propósito — é moldura de galeria e não
+   deve competir com a cor da foto. */
+.palco[data-principal="fotos"] .fotos {
+  inset: 0;
+  z-index: 1;
+  background: var(--grafite-0);
+}
+
+/* Sem clique: aqui o player cobre a tela inteira por trás das fotos, e
+   recebê-lo seria uma armadilha invisível sobre tudo. */
+.palco[data-principal="fotos"] .som {
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* --- o vídeo ocupando a tela --- */
+
+.palco[data-principal="video"] .som {
+  inset: 0;
+  z-index: 0;
+  pointer-events: auto;
+}
+
+.palco[data-principal="video"] .fotos {
+  z-index: 3;
+  background: none;
+}
+
+.palco[data-principal="video"][data-secundario="nao"] .fotos { display: none; }
+
+/* --- a caixinha do canto, seja ela o player ou as fotos --- */
+
+.palco[data-principal="fotos"][data-secundario="sim"] .som,
+.palco[data-principal="video"][data-secundario="sim"] .fotos {
   inset: auto 2.4vw 2.4vw auto;
   z-index: 3;
   width: 26vw;
@@ -598,11 +661,16 @@ button, input { font-family: inherit; font-size: inherit; }
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 0 0 2px var(--ambar), 0 18px 40px rgba(0, 0, 0, .6);
-  /* Só aqui o player recebe clique. No outro layout ele cobre a tela
-     inteira por trás das fotos, e receber clique ali seria uma
-     armadilha invisível sobre tudo. */
   pointer-events: auto;
 }
+
+/* Com o player recolhido ao canto, a camada de fotos deixa de precisar
+   ser opaca. */
+.palco[data-principal="fotos"][data-secundario="sim"] .fotos { background: none; }
+
+/* Foto em pé numa caixa deitada sobra espaço dos dois lados: o fundo
+   fecha a moldura em vez de deixar o vídeo vazar por trás dela. */
+.palco[data-principal="video"][data-secundario="sim"] .fotos { background: var(--grafite-0); }
 
 /* --- botão que chama e esconde a telinha --- */
 

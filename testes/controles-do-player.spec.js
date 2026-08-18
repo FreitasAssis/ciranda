@@ -1,17 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { abrir, foto, importarFotos } from './ajuda.js';
 
-/* A disposição escolhida nos ajustes é só o estado inicial. Durante a
-   exibição, V e o botão chamam e escondem a telinha — é o que permite
-   fazer o player aparecer, clicar em "Pular anúncio" e sumir com ele de
-   novo, sem entregar um canto da TV ao vídeo o evento inteiro. */
+/* Duas dimensões independentes: quem ocupa a tela (fotos ou vídeo) e se
+   o outro aparece num canto. T troca o principal, V mostra e esconde o
+   secundário. A disposição dos ajustes é o estado inicial; a alternância
+   durante a exibição não é salva. */
 
 const VIDEO = 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
 
-async function montar(page, { comTrilha = true, layout = 'so-foto' } = {}) {
-  // O player não precisa carregar de verdade: o que se testa é como a
-  // Ciranda o monta e o revela. Sem rede, o teste fica rápido e não
-  // depende do YouTube estar de pé.
+async function montar(page, { comTrilha = true, principal = 'fotos', secundario = false } = {}) {
+  // O player não precisa carregar: o que se testa é como a Ciranda o
+  // monta e o revela. Sem rede, o teste é rápido e não depende do
+  // YouTube estar de pé.
   await page.route('**://*.youtube.com/**', (rota) => rota.abort());
 
   await abrir(page);
@@ -22,7 +22,8 @@ async function montar(page, { comTrilha = true, layout = 'so-foto' } = {}) {
     await page.click('#btn-add-link');
     await expect(page.locator('#lista-trilha li')).toHaveCount(1);
   }
-  await page.check(`input[name="layout"][value="${layout}"]`);
+  await page.check(`input[name="principal"][value="${principal}"]`);
+  await page.setChecked('#campo-secundario', secundario);
 }
 
 async function exibir(page) {
@@ -30,12 +31,68 @@ async function exibir(page) {
   await expect(page.locator('#exibicao')).toBeVisible();
 }
 
-const disposicao = (page) => page.getAttribute('#palco', 'data-layout');
+const quemOcupa = (page) => page.getAttribute('#palco', 'data-principal');
+const temCanto = (page) => page.getAttribute('#palco', 'data-secundario');
 
-test.describe('como o player é montado', () => {
+// Uma caixa é "do canto" quando ocupa uma fração da largura do palco.
+async function ehCaixaDoCanto(page, seletor) {
+  const palco = await page.locator('#palco').boundingBox();
+  const alvo = await page.locator(seletor).boundingBox();
+  if (!alvo) return false;
+  return alvo.width < palco.width * 0.5;
+}
 
-  test('nasce com os próprios controles e sem o teclado do YouTube', async ({ page }) => {
-    await montar(page, { layout: 'canto' });
+test.describe('o vídeo ocupando a tela', () => {
+
+  test('o player cobre o palco e recebe clique', async ({ page }) => {
+    await montar(page, { principal: 'video' });
+    await exibir(page);
+
+    expect(await quemOcupa(page)).toBe('video');
+    expect(await ehCaixaDoCanto(page, '#som'), 'o player ficou pequeno').toBe(false);
+    await expect.poll(() => page.evaluate(() =>
+      getComputedStyle(document.getElementById('som')).pointerEvents)).toBe('auto');
+  });
+
+  test('sem o canto ligado, as fotos somem da tela', async ({ page }) => {
+    await montar(page, { principal: 'video', secundario: false });
+    await exibir(page);
+
+    await expect(page.locator('.fotos')).toBeHidden();
+  });
+
+  test('com o canto ligado, as fotos viram a caixinha', async ({ page }) => {
+    await montar(page, { principal: 'video', secundario: true });
+    await exibir(page);
+
+    await expect(page.locator('.fotos')).toBeVisible();
+    expect(await ehCaixaDoCanto(page, '.fotos'), 'as fotos não encolheram').toBe(true);
+  });
+
+});
+
+test.describe('as fotos ocupando a tela', () => {
+
+  test('sem o canto, o player fica atrás e não intercepta clique', async ({ page }) => {
+    await montar(page, { principal: 'fotos', secundario: false });
+    await exibir(page);
+
+    const ponteiro = await page.evaluate(() =>
+      getComputedStyle(document.getElementById('som')).pointerEvents);
+    expect(ponteiro, 'o player cobre a tela toda por trás das fotos').toBe('none');
+  });
+
+  test('com o canto, o player vira a telinha clicável', async ({ page }) => {
+    await montar(page, { principal: 'fotos', secundario: true });
+    await exibir(page);
+
+    expect(await ehCaixaDoCanto(page, '#som'), 'a telinha não encolheu').toBe(true);
+    await expect.poll(() => page.evaluate(() =>
+      getComputedStyle(document.getElementById('som')).pointerEvents)).toBe('auto');
+  });
+
+  test('o player nasce com os próprios controles e sem o teclado do YouTube', async ({ page }) => {
+    await montar(page, { principal: 'fotos', secundario: true });
     await exibir(page);
 
     const src = await page.getAttribute('#som iframe', 'src');
@@ -43,134 +100,152 @@ test.describe('como o player é montado', () => {
     expect(src, 'espaço e setas são da Ciranda, não do player').toContain('disablekb=1');
   });
 
-  test('na telinha do canto dá para clicar no player', async ({ page }) => {
-    await montar(page, { layout: 'canto' });
-    await exibir(page);
-
-    await expect.poll(() => page.evaluate(() =>
-      getComputedStyle(document.getElementById('som')).pointerEvents)).toBe('auto');
-  });
-
-  test('com o vídeo escondido o player não intercepta clique nenhum', async ({ page }) => {
-    await montar(page, { layout: 'so-foto' });
-    await exibir(page);
-
-    const ponteiro = await page.evaluate(() =>
-      getComputedStyle(document.getElementById('som')).pointerEvents);
-    expect(ponteiro, 'nesse layout o player cobre a tela toda').toBe('none');
-  });
-
-  test('o teclado volta para a Ciranda quando o mouse sai da telinha', async ({ page }) => {
-    await montar(page, { layout: 'canto' });
-    await exibir(page);
-
-    await page.evaluate(() => document.querySelector('#som iframe').focus());
-    expect(await page.evaluate(() => document.activeElement.tagName)).toBe('IFRAME');
-
-    await page.locator('#som').dispatchEvent('mouseleave');
-
-    await expect.poll(() => page.evaluate(() => document.activeElement.id), {
-      message: 'o foco ficou preso no player e as teclas pararam de responder'
-    }).toBe('palco');
-  });
-
 });
 
-test.describe('chamar e esconder a telinha', () => {
+test.describe('as duas teclas', () => {
 
-  test('V mostra o vídeo que começou escondido, e esconde de novo', async ({ page }) => {
-    await montar(page, { layout: 'so-foto' });
+  test('T troca quem ocupa a tela, nos dois sentidos', async ({ page }) => {
+    await montar(page, { principal: 'fotos' });
     await exibir(page);
-    expect(await disposicao(page)).toBe('so-foto');
+    expect(await quemOcupa(page)).toBe('fotos');
 
-    await page.keyboard.press('v');
-    await expect.poll(() => disposicao(page)).toBe('canto');
+    await page.keyboard.press('t');
+    await expect.poll(() => quemOcupa(page)).toBe('video');
 
-    await page.keyboard.press('v');
-    await expect.poll(() => disposicao(page)).toBe('so-foto');
+    await page.keyboard.press('t');
+    await expect.poll(() => quemOcupa(page)).toBe('fotos');
   });
 
-  test('V também esconde o vídeo que começou à mostra', async ({ page }) => {
-    await montar(page, { layout: 'canto' });
-    await exibir(page);
-    expect(await disposicao(page)).toBe('canto');
-
-    await page.keyboard.press('v');
-    await expect.poll(() => disposicao(page)).toBe('so-foto');
-  });
-
-  test('o botão faz o mesmo e diz o que faz, não o estado em que está', async ({ page }) => {
-    await montar(page, { layout: 'so-foto' });
-    await exibir(page);
-
-    const botao = page.locator('#btn-video');
-    await expect(botao).toBeVisible();
-    await expect(botao).toHaveText('Mostrar vídeo');
-
-    await botao.click();
-    await expect.poll(() => disposicao(page)).toBe('canto');
-    await expect(botao).toHaveText('Esconder vídeo');
-
-    await botao.click();
-    await expect.poll(() => disposicao(page)).toBe('so-foto');
-    await expect(botao).toHaveText('Mostrar vídeo');
-  });
-
-  test('a alternância não é salva: sair e voltar recomeça pelos ajustes', async ({ page }) => {
-    await montar(page, { layout: 'so-foto' });
+  test('V mostra e esconde o canto, com as fotos ocupando a tela', async ({ page }) => {
+    await montar(page, { principal: 'fotos', secundario: false });
     await exibir(page);
 
     await page.keyboard.press('v');
-    await expect.poll(() => disposicao(page)).toBe('canto');
+    await expect.poll(() => temCanto(page)).toBe('sim');
+
+    await page.keyboard.press('v');
+    await expect.poll(() => temCanto(page)).toBe('nao');
+  });
+
+  test('V mostra e esconde o canto também com o vídeo ocupando a tela', async ({ page }) => {
+    await montar(page, { principal: 'video', secundario: false });
+    await exibir(page);
+
+    await page.keyboard.press('v');
+    await expect.poll(() => temCanto(page)).toBe('sim');
+    expect(await ehCaixaDoCanto(page, '.fotos')).toBe(true);
+  });
+
+  test('as duas teclas são independentes: T não mexe no canto', async ({ page }) => {
+    await montar(page, { principal: 'fotos', secundario: true });
+    await exibir(page);
+
+    await page.keyboard.press('t');
+    await expect.poll(() => quemOcupa(page)).toBe('video');
+    expect(await temCanto(page), 'trocar o principal apagou o canto').toBe('sim');
+  });
+
+  test('nada disso é salvo: a exibição seguinte recomeça pelos ajustes', async ({ page }) => {
+    await montar(page, { principal: 'fotos', secundario: false });
+    await exibir(page);
+
+    await page.keyboard.press('t');
+    await page.keyboard.press('v');
+    await expect.poll(() => quemOcupa(page)).toBe('video');
 
     await page.keyboard.press('Escape');
     await expect(page.locator('#config')).toBeVisible();
     await exibir(page);
 
-    expect(await disposicao(page), 'a telinha voltou sozinha na exibição seguinte').toBe('so-foto');
+    expect(await quemOcupa(page)).toBe('fotos');
+    expect(await temCanto(page)).toBe('nao');
+  });
+
+});
+
+test.describe('o botão', () => {
+
+  test('nomeia o que vai mostrar, e isso muda com quem ocupa a tela', async ({ page }) => {
+    await montar(page, { principal: 'fotos', secundario: false });
+    await exibir(page);
+
+    const botao = page.locator('#btn-video');
+    await expect(botao).toHaveText('Mostrar vídeo');
+
+    await botao.click();
+    await expect(botao).toHaveText('Esconder vídeo');
+
+    // Com o vídeo ocupando a tela, quem vai para o canto é a foto.
+    await page.keyboard.press('t');
+    await expect(botao).toHaveText('Esconder fotos');
+
+    await botao.click();
+    await expect(botao).toHaveText('Mostrar fotos');
+  });
+
+  test('com o vídeo ocupando a tela, o botão não some sozinho', async ({ page }) => {
+    await montar(page, { principal: 'video' });
+    await exibir(page);
+
+    const opacidade = () => page.evaluate(() =>
+      getComputedStyle(document.getElementById('btn-video')).opacity);
+
+    await page.waitForTimeout(5000);
+    expect(await opacidade(),
+      'sumiu a única superfície clicável fora do player: o teclado fica preso lá').toBe('1');
+  });
+
+  test('com as fotos ocupando a tela, o botão some e volta com o mouse', async ({ page }) => {
+    await montar(page, { principal: 'fotos' });
+    await exibir(page);
+
+    const opacidade = () => page.evaluate(() =>
+      getComputedStyle(document.getElementById('btn-video')).opacity);
+
+    await expect.poll(opacidade, { timeout: 12000 }).toBe('0');
+    await page.mouse.move(400, 300);
+    await expect.poll(opacidade).toBe('1');
   });
 
 });
 
 test.describe('quando não há player', () => {
 
-  test('sem trilha do YouTube o botão nem aparece', async ({ page }) => {
-    await montar(page, { comTrilha: false, layout: 'so-foto' });
+  test('o botão nem aparece e a barra não promete tecla nenhuma', async ({ page }) => {
+    await montar(page, { comTrilha: false });
     await exibir(page);
 
     await expect(page.locator('#btn-video')).toBeHidden();
+    await expect(page.locator('#atalho-video')).toBeHidden();
+    await expect(page.locator('#atalho-trocar')).toBeHidden();
   });
 
-  test('sem trilha do YouTube o V não faz um retângulo vazio surgir na TV', async ({ page }) => {
-    await montar(page, { comTrilha: false, layout: 'so-foto' });
+  test('V e T não fazem nada', async ({ page }) => {
+    await montar(page, { comTrilha: false });
     await exibir(page);
 
     await page.keyboard.press('v');
+    await page.keyboard.press('t');
     await page.waitForTimeout(300);
 
-    expect(await disposicao(page), 'apareceu uma telinha vazia com contorno âmbar').toBe('so-foto');
+    expect(await quemOcupa(page)).toBe('fotos');
+    expect(await temCanto(page)).toBe('nao');
   });
 
-  test('sem trilha do YouTube a barra de atalhos não promete a tecla V', async ({ page }) => {
-    await montar(page, { comTrilha: false, layout: 'so-foto' });
+  test('escolher "o vídeo ocupa a tela" não deixa a TV preta', async ({ page }) => {
+    await montar(page, { comTrilha: false, principal: 'video', secundario: false });
     await exibir(page);
 
-    await expect(page.locator('#atalho-video')).toBeHidden();
-  });
-
-  test('com trilha do YouTube a barra de atalhos anuncia a tecla V', async ({ page }) => {
-    await montar(page, { layout: 'so-foto' });
-    await exibir(page);
-
-    await expect(page.locator('#atalho-video')).toBeVisible();
+    expect(await quemOcupa(page), 'sem vídeo nenhum, as fotos têm que assumir').toBe('fotos');
+    await expect(page.locator('.fotos')).toBeVisible();
   });
 
 });
 
 test.describe('durante a abertura', () => {
 
-  test('V é ignorado, e o vídeo não aparece sozinho quando ela termina', async ({ page }) => {
-    await montar(page, { layout: 'so-foto' });
+  test('V e T são ignorados e não vazam para depois', async ({ page }) => {
+    await montar(page, { principal: 'fotos' });
     await page.check('#campo-abertura');
     await page.fill('#campo-abertura-titulo', 'Ana e Rui');
     await page.locator('#campo-abertura-tempo').fill('2');
@@ -180,30 +255,91 @@ test.describe('durante a abertura', () => {
     await expect(page.locator('#abertura')).toBeVisible();
 
     await page.keyboard.press('v');
+    await page.keyboard.press('t');
     await page.waitForTimeout(200);
-    expect(await disposicao(page)).toBe('so-foto');
+    expect(await quemOcupa(page)).toBe('fotos');
 
-    // Passada a abertura, o vídeo continua escondido.
     await expect(page.locator('#abertura')).toBeHidden({ timeout: 8000 });
-    expect(await disposicao(page), 'o V da abertura vazou para depois').toBe('so-foto');
+    expect(await quemOcupa(page)).toBe('fotos');
+    expect(await temCanto(page)).toBe('nao');
   });
 
 });
 
-test.describe('o botão sai da frente sozinho', () => {
+test.describe('sair da tela cheia', () => {
 
-  test('some depois de parado e volta quando o mouse mexe', async ({ page }) => {
-    await montar(page, { layout: 'so-foto' });
+  test('encerra a exibição, porque com o foco preso no player o Esc não chega', async ({ page }) => {
+    await montar(page, { principal: 'video' });
     await exibir(page);
 
-    const opacidade = () => page.evaluate(() =>
-      getComputedStyle(document.getElementById('btn-video')).opacity);
+    await expect.poll(() => page.evaluate(() => !!document.fullscreenElement),
+      { message: 'a exibição nem entrou em tela cheia' }).toBe(true);
 
-    await expect.poll(opacidade, { timeout: 12000, message: 'o botão ficou para sempre na tela da TV' })
-      .toBe('0');
+    // É o que o navegador faz quando o Esc é apertado com o foco dentro
+    // do player: sai da tela cheia sem avisar a Ciranda por tecla.
+    await page.evaluate(() => document.exitFullscreen());
 
-    await page.mouse.move(400, 300);
-    await expect.poll(opacidade, { message: 'o botão não voltou quando o mouse mexeu' }).toBe('1');
+    await expect(page.locator('#config')).toBeVisible();
+    await expect(page.locator('#exibicao')).toBeHidden();
+  });
+
+});
+
+test.describe('ajustes de antes da mudança', () => {
+
+  test('quem tinha "fotos e vídeo" salvo continua com a telinha', async ({ page }) => {
+    await abrir(page);
+
+    // Grava a forma antiga de guardar a disposição e recarrega.
+    await page.evaluate(() => new Promise((ok, erro) => {
+      const p = indexedDB.open('ciranda');
+      p.onsuccess = () => {
+        const t = p.result.transaction(['ajustes'], 'readwrite');
+        t.objectStore('ajustes').put({ chave: 'ajustes', valor: { layout: 'canto', fonte: 'youtube' } });
+        t.oncomplete = () => ok();
+        t.onerror = () => erro(t.error);
+      };
+      p.onerror = () => erro(p.error);
+    }));
+    await page.reload();
+    await page.waitForFunction(() => document.documentElement.dataset.pronta === '1');
+
+    await expect(page.locator('input[name="principal"][value="fotos"]')).toBeChecked();
+    await expect(page.locator('#campo-secundario')).toBeChecked();
+  });
+
+  test('quem tinha "só as fotos" salvo continua sem a telinha', async ({ page }) => {
+    await abrir(page);
+
+    await page.evaluate(() => new Promise((ok, erro) => {
+      const p = indexedDB.open('ciranda');
+      p.onsuccess = () => {
+        const t = p.result.transaction(['ajustes'], 'readwrite');
+        t.objectStore('ajustes').put({ chave: 'ajustes', valor: { layout: 'so-foto', fonte: 'youtube' } });
+        t.oncomplete = () => ok();
+        t.onerror = () => erro(t.error);
+      };
+      p.onerror = () => erro(p.error);
+    }));
+    await page.reload();
+    await page.waitForFunction(() => document.documentElement.dataset.pronta === '1');
+
+    await expect(page.locator('input[name="principal"][value="fotos"]')).toBeChecked();
+    await expect(page.locator('#campo-secundario')).not.toBeChecked();
+  });
+
+});
+
+test.describe('a tela de ajustes explica as teclas', () => {
+
+  test('lista as teclas da exibição, inclusive as duas novas', async ({ page }) => {
+    await abrir(page);
+
+    const painel = page.locator('#instrucoes');
+    await expect(painel).toBeVisible();
+    for (const tecla of ['Esc', 'Espaço', 'V', 'T', 'R']) {
+      await expect(painel.getByText(tecla, { exact: true })).toBeVisible();
+    }
   });
 
 });

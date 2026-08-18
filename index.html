@@ -149,23 +149,28 @@
       </div>
 
       <div class="ajuste">
-        <span class="rotulo">Disposição na tela</span>
+        <span class="rotulo">O que ocupa a tela</span>
         <div class="opcoes">
           <label class="opcao">
-            <input type="radio" name="layout" value="so-foto" checked>
+            <input type="radio" name="principal" value="fotos" checked>
             <span class="opcao-corpo">
-              <span class="opcao-nome">Só as fotos</span>
-              <span class="opcao-nota">O vídeo fica escondido, só o som aparece.</span>
+              <span class="opcao-nome">As fotos</span>
+              <span class="opcao-nota">A ciranda de sempre. O vídeo fica escondido e só o som aparece.</span>
             </span>
           </label>
           <label class="opcao">
-            <input type="radio" name="layout" value="canto">
+            <input type="radio" name="principal" value="video">
             <span class="opcao-corpo">
-              <span class="opcao-nome">Fotos e vídeo</span>
-              <span class="opcao-nota">O vídeo fica pequeno no canto da tela.</span>
+              <span class="opcao-nome">O vídeo</span>
+              <span class="opcao-nota">Para um jogo ou um show, com as fotos de companhia.</span>
             </span>
           </label>
         </div>
+        <label class="chave">
+          <input type="checkbox" id="campo-secundario">
+          <span>Mostrar o outro num canto da tela</span>
+        </label>
+        <p class="imagem-nota">Durante a exibição dá para trocar isso a qualquer momento, sem sair.</p>
       </div>
 
       <div class="ajuste">
@@ -241,6 +246,25 @@
       </div>
     </section>
 
+    <!-- ---- INSTRUÇÕES ---- -->
+    <section class="painel" id="instrucoes">
+      <div class="painel-topo">
+        <h2 class="painel-titulo">Durante a exibição</h2>
+      </div>
+      <p class="painel-ajuda">Estas teclas valem com a ciranda rodando. Elas também aparecem por alguns segundos no rodapé quando a exibição começa.</p>
+
+      <dl class="teclas">
+        <div class="tecla-par"><dt>Esc</dt><dd>Sai da exibição e volta para cá</dd></div>
+        <div class="tecla-par"><dt>← →</dt><dd>Foto anterior e próxima</dd></div>
+        <div class="tecla-par"><dt>Espaço</dt><dd>Pausa e retoma a troca automática</dd></div>
+        <div class="tecla-par"><dt>T</dt><dd>Troca quem ocupa a tela: as fotos ou o vídeo</dd></div>
+        <div class="tecla-par"><dt>V</dt><dd>Mostra e esconde o que fica no canto</dd></div>
+        <div class="tecla-par"><dt>R</dt><dd>Religa a trilha do começo</dd></div>
+      </dl>
+
+      <p class="painel-ajuda">Com a trilha do YouTube, a telinha traz os controles do player — é por ali que se pausa a música ou se pula um anúncio. Depois de mexer nela, afaste o mouse: enquanto o cursor está em cima do player, o teclado pertence ao YouTube.</p>
+    </section>
+
     <p class="credito">
       Desenvolvido por <a href="https://luizfreitas.com.br/" target="_blank" rel="noopener noreferrer">Luiz Freitas</a>
     </p>
@@ -256,7 +280,7 @@
 
 <!-- ============ TELA DE EXIBIÇÃO ============ -->
 <div class="exibicao" id="exibicao" hidden>
-  <div class="palco" id="palco" data-layout="so-foto" tabindex="-1">
+  <div class="palco" id="palco" data-principal="fotos" data-secundario="nao" tabindex="-1">
     <div class="som" id="som"></div>
     <audio id="tocador" hidden></audio>
     <div class="fotos">
@@ -268,7 +292,7 @@
     <button class="botao-video" id="btn-video" hidden>Mostrar vídeo</button>
 
     <div class="atalhos" id="atalhos">
-      <span>Esc sair</span><span>← → foto</span><span>Espaço pausar</span><span>R religar o som</span><span id="atalho-video" hidden>V vídeo</span>
+      <span>Esc sair</span><span>← → foto</span><span>Espaço pausar</span><span>R religar o som</span><span id="atalho-trocar" hidden>T trocar tela</span><span id="atalho-video" hidden>V canto</span>
     </div>
   </div>
 

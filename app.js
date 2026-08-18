@@ -169,7 +169,8 @@ const PADRAO = {
   volume: 80,
   intervalo: 12,
   ordem: 'fixa',
-  layout: 'so-foto',
+  principal: 'fotos',
+  secundario: false,
   nome: '',
   rodapeNome: true,
   logoFundo: false,
@@ -188,6 +189,15 @@ async function lerAjustes() {
     p.onsuccess = () => devolver(p.result ? p.result.valor : null);
   });
   ajustes = { ...PADRAO, ...(guardado || {}) };
+
+  // A disposição já foi um valor só. Quem tem ciranda montada de antes
+  // não perde o ajuste por causa da mudança de forma.
+  if (guardado && guardado.layout && guardado.principal === undefined) {
+    ajustes.principal = 'fotos';
+    ajustes.secundario = guardado.layout === 'canto';
+    delete ajustes.layout;
+    await salvarAjustes();
+  }
 }
 
 const salvarAjustes = () =>
@@ -685,29 +695,58 @@ let temPlayer = false;
 let relogioBotaoVideo = null;
 
 /* A disposição escolhida nos ajustes é o estado inicial, não uma
-   sentença: durante a exibição, V e o botão chamam e escondem a telinha.
-   É o que permite fazer o player aparecer, clicar em "Pular anúncio" e
-   sumir com ele, sem entregar um canto da TV ao vídeo a festa inteira.
-   A alternância não é salva — a exibição seguinte recomeça pelos ajustes. */
-function alternarVideo() {
-  if (!exibindo || !temPlayer || naAbertura) return;
+   sentença. Durante a exibição são duas decisões independentes: T troca
+   quem ocupa a tela, V mostra e esconde quem fica no canto. É o que
+   permite chamar o player, clicar em "Pular anúncio" e sumir com ele, ou
+   pôr o jogo em tela cheia no meio da festa. Nada disso é salvo — a
+   exibição seguinte recomeça pelos ajustes. */
+function aplicarDisposicao() {
+  const palco = $('palco');
+  palco.dataset.principal = ajustes.principal;
+  palco.dataset.secundario = ajustes.secundario ? 'sim' : 'nao';
+}
+
+function trocarPrincipal() {
+  if (!podeMexerNaTela()) return;
 
   const palco = $('palco');
-  palco.dataset.layout = palco.dataset.layout === 'canto' ? 'so-foto' : 'canto';
+  palco.dataset.principal = palco.dataset.principal === 'video' ? 'fotos' : 'video';
   atualizarBotaoDoVideo();
   despertarBotaoDoVideo();
 }
 
-// O botão diz o que faz, não o estado em que está.
+function alternarVideo() {
+  if (!podeMexerNaTela()) return;
+
+  const palco = $('palco');
+  palco.dataset.secundario = palco.dataset.secundario === 'sim' ? 'nao' : 'sim';
+  atualizarBotaoDoVideo();
+  despertarBotaoDoVideo();
+}
+
+// Sem player não há duas coisas para arranjar na tela, e mexer nisso só
+// levaria a uma tela preta ou a uma caixa vazia na TV.
+const podeMexerNaTela = () => exibindo && temPlayer && !naAbertura;
+
+// O botão diz o que vai fazer, não o estado em que está. Quem vai para o
+// canto muda conforme quem está ocupando a tela.
 function atualizarBotaoDoVideo() {
-  $('btn-video').textContent =
-    $('palco').dataset.layout === 'canto' ? 'Esconder vídeo' : 'Mostrar vídeo';
+  const palco = $('palco');
+  const noCanto = palco.dataset.principal === 'video' ? 'fotos' : 'vídeo';
+  const acao = palco.dataset.secundario === 'sim' ? 'Esconder' : 'Mostrar';
+  $('btn-video').textContent = `${acao} ${noCanto}`;
 }
 
 function despertarBotaoDoVideo() {
   const botao = $('btn-video');
   botao.classList.remove('some');
   clearTimeout(relogioBotaoVideo);
+
+  // Com o vídeo ocupando a tela, o botão é a única superfície clicável
+  // fora do player. Se ele sumisse, um clique no vídeo prenderia o foco
+  // do teclado no iframe sem deixar por onde recuperá-lo.
+  if ($('palco').dataset.principal === 'video') return;
+
   relogioBotaoVideo = setTimeout(() => botao.classList.add('some'), 3000);
 }
 
@@ -782,15 +821,22 @@ async function iniciarExibicao() {
   $('config').hidden = true;
   $('exibicao').hidden = false;
   exibindo = true;
-  $('palco').dataset.layout = ajustes.layout;
+  aplicarDisposicao();
 
   await ligarTrilha();
 
-  // Sem player não há o que mostrar nem esconder: o botão não aparece e a
-  // barra de atalhos não promete uma tecla que não faz nada.
+  // Sem player não há o que arranjar na tela: o botão não aparece, a
+  // barra não promete teclas que não fazem nada, e as fotos assumem —
+  // senão escolher "o vídeo ocupa a tela" numa ciranda com trilha por
+  // arquivos daria uma TV preta.
   temPlayer = !!$('som').querySelector('iframe');
+  if (!temPlayer) {
+    $('palco').dataset.principal = 'fotos';
+    $('palco').dataset.secundario = 'nao';
+  }
   $('btn-video').hidden = !temPlayer;
   $('atalho-video').hidden = !temPlayer;
+  $('atalho-trocar').hidden = !temPlayer;
   if (temPlayer) {
     atualizarBotaoDoVideo();
     despertarBotaoDoVideo();
@@ -965,7 +1011,8 @@ function encerrarExibicao() {
   $('btn-video').hidden = true;
   $('btn-video').classList.remove('some');
   $('atalho-video').hidden = true;
-  $('palco').dataset.layout = ajustes.layout;
+  $('atalho-trocar').hidden = true;
+  aplicarDisposicao();
 
   if (urlDoLogo) { URL.revokeObjectURL(urlDoLogo); urlDoLogo = null; }
   if (urlDaAbertura) { URL.revokeObjectURL(urlDaAbertura); urlDaAbertura = null; }
@@ -1047,6 +1094,8 @@ document.addEventListener('keydown', (evento) => {
     agendarProxima();
     return;
   }
+
+  if (tecla === 't' || tecla === 'T') { trocarPrincipal(); return; }
 
   if (tecla === 'v' || tecla === 'V') { alternarVideo(); return; }
 
@@ -1148,12 +1197,17 @@ function ligarInterface() {
     });
   });
 
-  document.querySelectorAll('input[name="layout"]').forEach((opcao) => {
+  document.querySelectorAll('input[name="principal"]').forEach((opcao) => {
     opcao.addEventListener('change', () => {
       if (!opcao.checked) return;
-      ajustes.layout = opcao.value;
+      ajustes.principal = opcao.value;
       salvarAjustes();
     });
+  });
+
+  $('campo-secundario').addEventListener('change', () => {
+    ajustes.secundario = $('campo-secundario').checked;
+    salvarAjustes();
   });
 
   $('campo-nome').addEventListener('input', () => {
@@ -1225,6 +1279,14 @@ function ligarInterface() {
 
   $('btn-video').addEventListener('click', alternarVideo);
 
+  // Com o vídeo ocupando a tela, um clique no player prende o foco do
+  // teclado no iframe e o Esc da Ciranda não chega mais. O Esc do
+  // navegador ainda sai da tela cheia, e é por aqui que isso vira o
+  // encerramento de verdade em vez de uma exibição pela metade.
+  document.addEventListener('fullscreenchange', () => {
+    if (exibindo && !document.fullscreenElement) encerrarExibicao();
+  });
+
   $('exibicao').addEventListener('mousemove', () => {
     if (exibindo && temPlayer) despertarBotaoDoVideo();
   });
@@ -1271,8 +1333,10 @@ async function comecar() {
 
   const ordemEscolhida = document.querySelector(`input[name="ordem"][value="${ajustes.ordem}"]`);
   if (ordemEscolhida) ordemEscolhida.checked = true;
-  const layoutEscolhido = document.querySelector(`input[name="layout"][value="${ajustes.layout}"]`);
-  if (layoutEscolhido) layoutEscolhido.checked = true;
+  const principalEscolhido = document.querySelector(`input[name="principal"][value="${ajustes.principal}"]`);
+  if (principalEscolhido) principalEscolhido.checked = true;
+  $('campo-secundario').checked = ajustes.secundario;
+  aplicarDisposicao();
 
   desenharTrilha();
   await desenharMusicas();
